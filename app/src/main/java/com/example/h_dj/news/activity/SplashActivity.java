@@ -44,7 +44,6 @@ public class SplashActivity extends BaseActivity {
         super.init();
         //获取app启动次数
         getCount();
-
         //判断软件是否是第一次启动
         if (count > 0) {
             mHandler.sendEmptyMessageDelayed(GOTO_MAINACTIVITY, DELAYED);
@@ -63,7 +62,6 @@ public class SplashActivity extends BaseActivity {
         editor.putInt(COUNT, ++count);
         editor.commit();
     }
-
     /**
      * 获取app启动次数
      */

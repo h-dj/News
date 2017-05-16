@@ -29,11 +29,12 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return mFragmentList.size();
+        return mFragmentList != null ? mFragmentList.size() : 0;
     }
 
     /**
      * 获取标题
+     *
      * @param position
      * @return
      */
@@ -41,4 +42,7 @@ public class MyPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return mTitles.get(position);
     }
+
+
+
 }

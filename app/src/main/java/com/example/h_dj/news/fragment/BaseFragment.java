@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.h_dj.news.utils.LogUtil;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
@@ -21,6 +23,7 @@ public abstract class BaseFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        LogUtil.e(this.getClass().getSimpleName() + "初始化");
         View inflate = inflater.inflate(getlayoutId(), container, false);
         unbinder = ButterKnife.bind(this, inflate);
         init();

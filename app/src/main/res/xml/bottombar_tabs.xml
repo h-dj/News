@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        barColorWhenSelected="@color/colorAccent"
+        icon="@drawable/tab_news_selector"
+        id="@+id/News"
+        title="@string/news"/>
+    <tab
+        barColorWhenSelected="@color/colorAccent"
+        id="@+id/tab_read"
+        icon="@drawable/tab_read_selector"
+        title="@string/read"/>
+    <tab
+        barColorWhenSelected="@color/colorAccent"
+        id="@+id/tab_video"
+        icon="@drawable/tab_video_selector"
+        title="@string/video"/>
+
+    <tab
+        barColorWhenSelected="@color/colorAccent"
+        id="@+id/tab_recovery"
+        icon="@drawable/tab_recovery_selector"
+        title="@string/recovery"/>
+    <tab
+        barColorWhenSelected="@color/colorAccent"
+        id="@+id/tab_my"
+        icon="@drawable/tab_my_selector"
+        title="@string/my"/>
+</tabs>
