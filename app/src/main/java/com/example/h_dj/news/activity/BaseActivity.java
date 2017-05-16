@@ -5,11 +5,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 /**
  * Created by H_DJ on 2017/5/15.
  */
 
 public abstract class BaseActivity extends AppCompatActivity {
+
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -17,6 +22,8 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getLayoutId() != 0) {
             setContentView(getLayoutId());
         }
+
+        unbinder = ButterKnife.bind(this);
         init();
     }
 
@@ -36,5 +43,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void goTo(Class mClass) {
         Intent intent = new Intent(this, mClass);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unbinder.unbind();
+        super.onDestroy();
+
     }
 }

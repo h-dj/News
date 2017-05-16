@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 
-import com.example.h_dj.news.MainActivity;
-
 /**
  * Created by H_DJ on 2017/5/15.
  */

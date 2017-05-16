@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.h_dj.news.MainActivity;
+import com.example.h_dj.news.activity.MainActivity;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.GuideActivity;
 
