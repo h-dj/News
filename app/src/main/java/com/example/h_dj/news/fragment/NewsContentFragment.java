@@ -1,13 +1,17 @@
 package com.example.h_dj.news.fragment;
 
+import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
 import com.example.h_dj.news.Inteface.IListener;
 import com.example.h_dj.news.Inteface.ListenerManager;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.activity.WebActivity;
+import com.example.h_dj.news.adapter.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyRVAdapter;
 import com.example.h_dj.news.bean.NewsBean;
 
@@ -41,6 +45,20 @@ public class NewsContentFragment extends BaseFragment implements IListener {
         ListenerManager.getInstance().registerListtener(this);
         mDataBeen = new ArrayList<>();
         mMyRVAdapter = new MyRVAdapter(getContext(), R.layout.news_item, mDataBeen);
+        mMyRVAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                Bundle bundle = new Bundle();
+                bundle.putString("url", mDataBeen.get(position).getUrl());
+                bundle.putString("title", mDataBeen.get(position).getTitle());
+                goTo(WebActivity.class, bundle);
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
         initRecyclerView();
     }
 
@@ -58,10 +76,10 @@ public class NewsContentFragment extends BaseFragment implements IListener {
 
     @Override
     public void notifyAllActivity(Object o, int type) {
-            List<NewsBean.ResultBean.DataBean> dataBeanList = (List<NewsBean.ResultBean.DataBean>) o;
-            mDataBeen.clear();
-            mDataBeen.addAll(dataBeanList);
-            mMyRVAdapter.notifyDataSetChanged();
+        List<NewsBean.ResultBean.DataBean> dataBeanList = (List<NewsBean.ResultBean.DataBean>) o;
+        mDataBeen.clear();
+        mDataBeen.addAll(dataBeanList);
+        mMyRVAdapter.notifyDataSetChanged();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.example.h_dj.news.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -39,5 +40,16 @@ public abstract class BaseFragment extends Fragment {
     public void onDestroyView() {
         unbinder.unbind();
         super.onDestroyView();
+    }
+
+    /**
+     * 跳转
+     *
+     * @param mclass
+     */
+    public void goTo(Class mclass, Bundle bundle) {
+        Intent intent = new Intent(getContext(), mclass);
+        intent.putExtra("data", bundle);
+        startActivity(intent);
     }
 }
