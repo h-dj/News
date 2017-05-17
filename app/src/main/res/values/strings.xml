@@ -5,6 +5,9 @@
     <string name="video">视听</string>
     <string name="recovery">发现</string>
     <string name="my">我的</string>
+    <string name="error_url">请求url错误</string>
+    <string name="error_network">网络异常</string>
+    <string name="item_title">标题</string>
 
 
 </resources>

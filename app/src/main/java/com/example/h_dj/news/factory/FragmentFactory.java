@@ -20,6 +20,9 @@ import java.util.Map;
 
 public class FragmentFactory {
 
+    private FragmentFactory() {
+    }
+
     private static FragmentFactory mFragmentFactory;
 
     public static FragmentFactory getInstance() {

@@ -4,6 +4,8 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 
 import com.example.h_dj.news.R;
@@ -21,6 +23,8 @@ public class MainActivity extends BaseActivity {
     FrameLayout mContentContainer;
     @BindView(R.id.bottomBar)
     BottomBar mBottomBar;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     private Fragment currentFragment;
     private int position;
 
@@ -32,7 +36,16 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void init() {
         super.init();
+        initToolbar();
         initBottomBar();
+    }
+
+    private void initToolbar() {
+        setSupportActionBar(mToolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(getString(R.string.app_name));
+        }
     }
 
 
@@ -93,12 +106,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        if (currentFragment != null) {
-            currentFragment.onDestroyView();
-            currentFragment = null;
-        }
-        super.onDestroy();
-    }
+
+
 }
