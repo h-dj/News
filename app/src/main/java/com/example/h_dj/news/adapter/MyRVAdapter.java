@@ -11,16 +11,14 @@ import java.util.List;
 
 /**
  * Created by H_DJ on 2017/5/16.
+ * 适配器
  */
 
 public class MyRVAdapter extends BaseRecycleViewAdapter {
-
-    private List<NewsBean.ResultBean.DataBean> mResultBeen;
     private Context mContext;
 
     public MyRVAdapter(Context context, int layoutId, List datas) {
         super(context, layoutId, datas);
-        mResultBeen = datas;
         mContext = context;
     }
 
@@ -34,7 +32,7 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
                 .load(dataBean.getThumbnail_pic_s())
                 .placeholder(R.mipmap.ic_launcher)
                 .centerCrop()
-                .error(R.drawable.error)
+                .error(R.mipmap.ic_launcher)
                 .into((ImageView) holder.getView(R.id.item_pic));
     }
 }

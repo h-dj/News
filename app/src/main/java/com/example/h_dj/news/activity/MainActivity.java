@@ -56,25 +56,25 @@ public class MainActivity extends BaseActivity {
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-                switch (tabId) {
-                    case R.id.News:
-                        position = tabId;
-                        break;
-                    case R.id.tab_read:
-                        position = tabId;
-                        break;
-                    case R.id.tab_video:
-                        position = tabId;
-                        break;
-                    case R.id.tab_recovery:
-                        position = tabId;
-                        break;
-                    case R.id.tab_my:
-                        position = tabId;
-                        break;
-
-                }
-                setFragment(position);
+//                switch (tabId) {
+//                    case R.id.News:
+//                        position = tabId;
+//                        break;
+//                    case R.id.tab_read:
+//                        position = tabId;
+//                        break;
+//                    case R.id.tab_video:
+//                        position = tabId;
+//                        break;
+//                    case R.id.tab_recovery:
+//                        position = tabId;
+//                        break;
+//                    case R.id.tab_my:
+//                        position = tabId;
+//                        break;
+//
+//                }
+                setFragment(tabId);
             }
         });
     }
@@ -92,20 +92,19 @@ public class MainActivity extends BaseActivity {
         Fragment fragment = FragmentFactory.getInstance().createFragment(position);
         //如果当前的fragment为空；新添加一个
         if (currentFragment == null) {
-            fragmentTransaction.add(R.id.contentContainer, fragment).commitAllowingStateLoss();
-            currentFragment = fragment;
+            fragmentTransaction.add(R.id.contentContainer, fragment).commit();
+
         } else if (currentFragment != fragment) {
             //如果currentFragment不等于要添加的fragment;则隐藏currentFragment；显示fragment
             //如果被添加过；则隐藏currentFragment；显示fragment
             if (fragment.isAdded()) {
-                fragmentTransaction.hide(currentFragment).show(fragment).commitAllowingStateLoss();
+                fragmentTransaction.hide(currentFragment).show(fragment).commit();
             } else {
-                fragmentTransaction.hide(currentFragment).add(R.id.contentContainer, fragment).commitAllowingStateLoss();
+                fragmentTransaction.hide(currentFragment).add(R.id.contentContainer, fragment).commit();
             }
-            currentFragment = fragment;
         }
+        currentFragment = fragment;
     }
-
 
 
 }
