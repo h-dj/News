@@ -41,7 +41,11 @@
             android:name=".activity.GuideActivity"
             android:theme="@style/AppTheme"/>
         <!--web页-->
-        <activity android:name=".activity.WebActivity"/>
+        <activity android:name=".activity.WebActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+            </intent-filter>
+        </activity>
         <!--登陆页-->
         <activity android:name=".activity.LoginActivity"/>
         <!--注册页-->

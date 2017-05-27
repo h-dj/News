@@ -4,12 +4,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
     >
-    <WebView
-        android:layout_below="@+id/toolbar"
+
+    <com.tencent.smtt.sdk.WebView
         android:id="@+id/web"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-    </WebView>
+        android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar">
+    </com.tencent.smtt.sdk.WebView>
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
@@ -20,12 +21,39 @@
         app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <ProgressBar
-        android:layout_below="@+id/toolbar"
         android:id="@+id/progress"
-        android:maxHeight="5dp"
-        android:minHeight="5dp"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:maxHeight="5dp"
+        android:minHeight="5dp"
         android:progressDrawable="@drawable/progressbar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/icons"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/comment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawableLeft="@drawable/comment"
+            android:drawablePadding="10dp"
+            android:hint="@string/comment"
+            android:paddingLeft="10dp"/>
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            android:textColor="@color/secondary_text"/>
+    </LinearLayout>
+
 </RelativeLayout>

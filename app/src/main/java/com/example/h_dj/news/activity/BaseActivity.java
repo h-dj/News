@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.example.h_dj.news.bean.User;
+
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import cn.bmob.v3.BmobUser;
 
 /**
  * Created by H_DJ on 2017/5/15.
@@ -18,6 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
     private ProgressDialog progressDialog;
+    protected User mUser;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,7 +47,12 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected abstract int getLayoutId();
 
     public void goTo(Class mClass) {
+        goTo(mClass, null);
+    }
+
+    public void goTo(Class mClass, Bundle bundle) {
         Intent intent = new Intent(this, mClass);
+        intent.putExtra("data", bundle);
         startActivity(intent);
     }
 
@@ -68,5 +77,19 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void hiddenProgressDialog() {
         progressDialog.dismiss();
+    }
+
+    /**
+     * 判断用户是已否登陆
+     *
+     * @return
+     */
+    public boolean checkLogin() {
+        mUser = BmobUser.getCurrentUser(User.class);
+        if (mUser != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

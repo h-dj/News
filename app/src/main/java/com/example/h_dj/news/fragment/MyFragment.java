@@ -3,8 +3,15 @@ package com.example.h_dj.news.fragment;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.LoginActivity;
+import com.example.h_dj.news.bean.User;
+import com.example.h_dj.news.utils.LogUtil;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -41,6 +48,7 @@ public class MyFragment extends BaseFragment {
     @BindView(R.id.myEmail)
     TextView mMyEmail;
 
+
     @Override
     protected int getlayoutId() {
         return R.layout.fragment_my;
@@ -49,6 +57,21 @@ public class MyFragment extends BaseFragment {
     @Override
     protected void init() {
         super.init();
+        EventBus.getDefault().register(this);
+        initUserInfo();
+    }
+
+    /**
+     * 初始化用户
+     * 判断是否已登陆
+     */
+    private void initUserInfo() {
+        if (checkLogin()) {
+            LogUtil.e("当前用户id:" + mUser.getObjectId());
+            mUserName.setText(mUser.getUsername());
+        } else {
+            mUserName.setText(getString(R.string.login_name));
+        }
     }
 
 
@@ -59,8 +82,31 @@ public class MyFragment extends BaseFragment {
                 break;
             case R.id.profile_image:
             case R.id.user_name:
-                goTo(LoginActivity.class, null);
+                if (mUser != null) {
+
+                } else {
+                    goTo(LoginActivity.class, null);
+                }
                 break;
         }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MyMessageEvent event) {
+        int fromMsg = event.getFromMsg();
+        switch (fromMsg) {
+            case MyMessageEvent.MSG_FROM_LOGIN:
+                User user = (User) event.getT();
+                mUserName.setText(user.getUsername());
+                break;
+        }
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        EventBus.getDefault().unregister(this);
+        super.onDestroyView();
     }
 }

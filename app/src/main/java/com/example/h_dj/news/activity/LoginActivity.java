@@ -13,9 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.bean.User;
 import com.example.h_dj.news.utils.LogUtil;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -132,7 +135,7 @@ public class LoginActivity extends BaseActivity {
                 if (user != null) {
                     Log.i("smile", "用户登陆成功");
                     finish();
-
+                    EventBus.getDefault().post(new MyMessageEvent<>(user, MyMessageEvent.MSG_FROM_LOGIN));
                 } else {
                     LogUtil.e("登陆失败：" + e.getLocalizedMessage());
                 }

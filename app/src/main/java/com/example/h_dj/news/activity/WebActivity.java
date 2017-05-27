@@ -1,19 +1,32 @@
 package com.example.h_dj.news.activity;
 
+
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.bean.CommentBean;
 import com.example.h_dj.news.utils.LogUtil;
+import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.WebViewClient;
 
 import butterknife.BindView;
+import butterknife.OnClick;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * Created by H_DJ on 2017/5/17.
@@ -26,8 +39,13 @@ public class WebActivity extends BaseActivity {
     Toolbar mToolbar;
     @BindView(R.id.progress)
     ProgressBar mProgress;
+    @BindView(R.id.comment)
+    EditText mComment;
+    @BindView(R.id.send)
+    Button mSend;
 
-    private String title;
+
+    private String url;
 
     @Override
     protected int getLayoutId() {
@@ -41,8 +59,7 @@ public class WebActivity extends BaseActivity {
         if (intent != null) {
             Bundle data = intent.getBundleExtra("data");
             if (data != null && !data.isEmpty()) {
-                String url = data.getString("url");
-                title = data.getString("title");
+                url = data.getString("url");
                 mWeb.loadUrl(url);
             }
         }
@@ -63,9 +80,15 @@ public class WebActivity extends BaseActivity {
      */
     private void initToolbar() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setTitle("");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        new MenuInflater(this).inflate(R.menu.web_menu, menu);
+        return true;
     }
 
     @Override
@@ -105,7 +128,14 @@ public class WebActivity extends BaseActivity {
             //防止查看网页时，调用系统浏览器或qit
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                view.loadUrl(url);
+                if (Uri.parse(url).getHost().equals(url)) {
+                    // This is my web site, so do not override; let my WebView load the page
+                    return false;
+                }
+                // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
+                Bundle bundle = new Bundle();
+                bundle.putString("url", url);
+                goTo(WebActivity.class, bundle);
                 return true;
             }
 
@@ -115,7 +145,10 @@ public class WebActivity extends BaseActivity {
 
             @Override
             public void onProgressChanged(WebView webView, int i) {
-                if (i < 100) {
+                if (mProgress == null) {
+                    return;
+                }
+                if (i <= 100) {
                     LogUtil.e("加载进度：" + i);
                     mProgress.setVisibility(View.VISIBLE);
                     mProgress.setProgress(i);
@@ -141,5 +174,44 @@ public class WebActivity extends BaseActivity {
             mWeb.clearHistory();
         }
         super.onDestroy();
+    }
+
+    @OnClick(R.id.send)
+    public void onViewClicked() {
+        if (checkLogin()) {
+            String comment = mComment.getText().toString().trim();
+            if (TextUtils.isEmpty(comment)) {
+                Toast.makeText(WebActivity.this, "还没填写评论", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            sendComment(comment);
+        } else {
+            goTo(LoginActivity.class);
+        }
+    }
+
+    /**
+     * 发送评论
+     *
+     * @param comment 评论内容
+     */
+    private void sendComment(String comment) {
+        CommentBean comments = new CommentBean();
+        //注意：不能调用gameScore.setObjectId("")方法
+        comments.setUserId(mUser.getObjectId());
+        comments.setCommentContent(comment);
+        comments.setCommentUrl(mWeb.getOriginalUrl());
+        comments.save(new SaveListener<String>() {
+            @Override
+            public void done(String objectId, BmobException e) {
+                if (e == null) {
+                    Toast.makeText(WebActivity.this, "评论成功", Toast.LENGTH_SHORT).show();
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                    Toast.makeText(WebActivity.this, "评论失败", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 }
