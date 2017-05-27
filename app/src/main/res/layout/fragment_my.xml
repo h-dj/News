@@ -1,12 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical">
+              android:orientation="vertical"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/colorAccent"
+        >
+
+        <TextView
+            android:id="@+id/setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_margin="10dp"
+            android:text="@string/seting"
+            android:textColor="@color/icons"
+            android:textSize="@dimen/setting"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/profile_image"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:src="@drawable/header"
+                app:civ_border_color="@color/icons"
+                app:civ_border_width="1dp"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:text="@string/login_name"
+                android:textColor="@color/icons"
+                android:textSize="@dimen/item_textSize"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/icons"
+        android:divider="@drawable/divider"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:showDividers="middle"
+        >
+
+        <TextView
+            android:id="@+id/reading"
+            style="@style/my_nav"
+            android:drawableTop="@drawable/glass_"
+            android:text="@string/read"/>
+
+        <TextView
+            android:id="@+id/collection"
+            style="@style/my_nav"
+            android:drawableTop="@drawable/collection"
+            android:text="@string/collection"/>
+
+        <TextView
+            android:id="@+id/comment"
+            style="@style/my_nav"
+            android:drawableTop="@drawable/comment"
+            android:text="@string/comment"/>
+
+        <TextView
+            android:id="@+id/gold"
+            style="@style/my_nav"
+            android:drawableTop="@drawable/gold"
+            android:text="@string/gold"/>
+    </LinearLayout>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="个人"/>
+        android:id="@+id/myMsg"
+        style="@style/my_list"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/msg"
+        android:drawableRight="@drawable/next"
+        android:text="@string/myMsg"
+        />
+
+    <TextView
+        android:id="@+id/goldShop"
+        style="@style/my_list"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/shop"
+        android:text="@string/goldShop"
+        />
+
+    <TextView
+        android:id="@+id/myTask"
+        style="@style/my_list"
+        android:layout_marginTop="2dp"
+        android:drawableLeft="@drawable/task"
+        android:text="@string/myTest"
+        />
+
+    <TextView
+        android:id="@+id/myWallet"
+        style="@style/my_list"
+        android:layout_marginTop="2dp"
+        android:drawableLeft="@drawable/wallet"
+        android:text="@string/myWallet"
+        />
+
+    <TextView
+        android:id="@+id/myEmail"
+        style="@style/my_list"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@drawable/email"
+        android:text="@string/myEmail"
+        />
 </LinearLayout>

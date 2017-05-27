@@ -1,5 +1,7 @@
 package com.example.h_dj.news.fragment;
 
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +22,7 @@ import butterknife.Unbinder;
 public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
+    protected Context mContext;
 
     @Nullable
     @Override
@@ -51,5 +54,11 @@ public abstract class BaseFragment extends Fragment {
         Intent intent = new Intent(getContext(), mclass);
         intent.putExtra("data", bundle);
         startActivity(intent);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        mContext = context;
     }
 }

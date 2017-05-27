@@ -14,48 +14,21 @@ public class API {
      * top(头条，默认),shehui(社会),guonei(国内),guoji(国际),
      * yule(娱乐),tiyu(体育)junshi(军事),keji(科技),caijing(财经),shishang(时尚)
      */
+    public final static String[] typeValue = new String[]{
+            "头条", "社会", "国内", "国际", "娱乐", "体育", "军事", "科技", "财经", "时尚",
+    };
     public final static String[] types = new String[]{
             "top", "shehui", "guonei", "guoji", "yule", "tiyu", "junshi", "keji", "caijing", "shishang"
     };
 
-    private static int position;
+    private static int position = 0;
 
-    public static String getRequestUrl(int type) {
-        if (type < 0 || type > 9) {
-            return null;
-        }
-        switch (type) {
-            case 0:
-                position = 0;
+    public static String getRequestUrl(String type) {
+        for (int i = 0; i < typeValue.length; i++) {
+            if (typeValue[i].equals(type)) {
+                position = i;
                 break;
-            case 1:
-                position = 1;
-                break;
-            case 2:
-                position = 2;
-                break;
-            case 3:
-                position = 3;
-                break;
-            case 4:
-                position = 4;
-                break;
-            case 5:
-                position = 5;
-                break;
-            case 6:
-                position = 6;
-                break;
-            case 7:
-                position = 7;
-                break;
-            case 8:
-                position = 8;
-                break;
-            case 9:
-                position = 9;
-                break;
-
+            }
         }
         return index + newsType + types[position] + key;
     }

@@ -2,7 +2,6 @@ package com.example.h_dj.news.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,7 +71,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
 
     @Override
     public int getItemCount() {
-        return mList.size();
+        return mList == null ? 0 : mList.size();
     }
 
 
@@ -124,7 +123,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
          * @param content
          */
         public void setText(int ViewId, String content) {
-            Log.i(TAG, "setText: " + ViewId);
+           // Log.i(TAG, "setText: " + ViewId);
             TextView tv = getView(ViewId);
             tv.setText(content);
         }

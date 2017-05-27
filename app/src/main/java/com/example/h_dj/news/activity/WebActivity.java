@@ -5,13 +5,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.utils.LogUtil;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
 
 import butterknife.BindView;
 
@@ -139,7 +139,6 @@ public class WebActivity extends BaseActivity {
             //清除当前webview访问的历史记录
             //只会webview访问历史记录里的所有记录除了当前访问记录
             mWeb.clearHistory();
-
         }
         super.onDestroy();
     }

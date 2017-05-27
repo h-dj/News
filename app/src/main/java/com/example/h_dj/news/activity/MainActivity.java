@@ -4,8 +4,6 @@ import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 
 import com.example.h_dj.news.R;
@@ -23,8 +21,6 @@ public class MainActivity extends BaseActivity {
     FrameLayout mContentContainer;
     @BindView(R.id.bottomBar)
     BottomBar mBottomBar;
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
     private Fragment currentFragment;
     private int position;
 
@@ -36,17 +32,10 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void init() {
         super.init();
-        initToolbar();
         initBottomBar();
     }
 
-    private void initToolbar() {
-        setSupportActionBar(mToolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(getString(R.string.app_name));
-        }
-    }
+
 
 
     /**
@@ -56,24 +45,6 @@ public class MainActivity extends BaseActivity {
         mBottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
             public void onTabSelected(@IdRes int tabId) {
-//                switch (tabId) {
-//                    case R.id.News:
-//                        position = tabId;
-//                        break;
-//                    case R.id.tab_read:
-//                        position = tabId;
-//                        break;
-//                    case R.id.tab_video:
-//                        position = tabId;
-//                        break;
-//                    case R.id.tab_recovery:
-//                        position = tabId;
-//                        break;
-//                    case R.id.tab_my:
-//                        position = tabId;
-//                        break;
-//
-//                }
                 setFragment(tabId);
             }
         });

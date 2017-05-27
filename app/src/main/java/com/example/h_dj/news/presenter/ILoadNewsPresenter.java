@@ -5,5 +5,5 @@ package com.example.h_dj.news.presenter;
  */
 
 public interface ILoadNewsPresenter {
-    void LoadNewsData(int position);
+    void LoadNewsData(String value);
 }

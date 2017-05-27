@@ -1,5 +1,6 @@
 package com.example.h_dj.news.activity;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;

@@ -1,22 +1,45 @@
 package com.example.h_dj.news.fragment;
 
+import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.ArraySet;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.PopupWindow;
+import android.widget.Space;
+import android.widget.Toast;
 
 import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.Inteface.ListenerManager;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.adapter.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyPagerAdapter;
+import com.example.h_dj.news.adapter.MyTabSelectAdapter;
 import com.example.h_dj.news.bean.NewsBean;
+import com.example.h_dj.news.entity.API;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
 import com.example.h_dj.news.utils.LogUtil;
+import com.example.h_dj.news.utils.SPutils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -24,16 +47,31 @@ import butterknife.BindView;
 
 public class NewsFragment extends BaseFragment implements INewsFragment {
 
+    private static final String TABS = "TABS";
+    private static final String TABS_SELECT = "TABS_SELECT";//已选择栏目
+    private static final String TABS_CAN_SELECT = "TABS_CAN_SELECT";//供选择
     @BindView(R.id.tabLayout)
     TabLayout mTabLayout;
     @BindView(R.id.viewPager)
     ViewPager mViewPager;
+    @BindView(R.id.tabs_switcher)
+    ImageButton mTabsSwitcher;
+    @BindView(R.id.spacer)
+    Space mSpace;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    Unbinder unbinder;
 
     private ILoadNewsPresenter mPresenter;
 
     private int newsType = 0;
     private List<String> mTabs;
+    private List<String> mCanSelectTabs;
+
     private List<Fragment> mPagers;
+    private PopupWindow pw;
+    private MyPagerAdapter myPagerAdapter;
+    private SPutils mSPutils;
 
 
     @Override
@@ -44,12 +82,98 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     @Override
     protected void init() {
         super.init();
-        mPresenter = new LoadNewsPresenterImpl(getContext(), this);
-
+        mSPutils = SPutils.newInstance(mContext).build(TABS, Context.MODE_PRIVATE);
+        mPresenter = new LoadNewsPresenterImpl(mContext, this);
+        mTabs = new ArrayList<>();
+        mCanSelectTabs = new ArrayList<>();
+        initToolbar();
         initTabList();
         addTab();
+        initTab();
         initFragmentPagers();
         initViewPager();
+        initPopupWindow();
+    }
+
+    private void initToolbar() {
+        ((AppCompatActivity) mContext).setSupportActionBar(mToolbar);
+        ActionBar actionBar = ((AppCompatActivity) mContext).getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(getString(R.string.app_name));
+        }
+    }
+
+    /**
+     * 初始化popupwindow
+     */
+    private void initPopupWindow() {
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View inflate = inflater.inflate(R.layout.popup_tabs, null);
+        pw = new PopupWindow(inflate, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
+        pw.setAnimationStyle(R.style.popupWindowSelectTabs);
+
+        final MyTabSelectAdapter canSelectAdapter = new MyTabSelectAdapter(mContext, R.layout.tabs, mCanSelectTabs);
+        final MyTabSelectAdapter selectAdapter = new MyTabSelectAdapter(mContext, R.layout.tabs, mTabs);
+        RecyclerView rvSelected = (RecyclerView) inflate.findViewById(R.id.rv_tabs_selected);
+        rvSelected.setItemAnimator(new DefaultItemAnimator());
+        rvSelected.setLayoutManager(new GridLayoutManager(mContext, 3));
+        rvSelected.setHasFixedSize(true);
+        rvSelected.setAdapter(selectAdapter);
+        selectAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                if (mTabs.size() < 6) {
+                    Toast.makeText(mContext, "至少选择五个栏目", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String remove = mTabs.remove(position);
+                mCanSelectTabs.add(remove);
+                //先更新数据
+                selectAdapter.notifyDataSetChanged();
+                canSelectAdapter.notifyDataSetChanged();
+                //再做删除动画
+                selectAdapter.notifyItemRemoved(position);
+                canSelectAdapter.notifyItemInserted(mTabs.size());
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+            }
+        });
+
+        final RecyclerView rvCanSelected = (RecyclerView) inflate.findViewById(R.id.rv_can_select_tabs);
+        rvCanSelected.setItemAnimator(new DefaultItemAnimator());
+        rvCanSelected.setLayoutManager(new GridLayoutManager(mContext, 3));
+        rvCanSelected.setHasFixedSize(true);
+        rvCanSelected.setAdapter(canSelectAdapter);
+        canSelectAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                String remove = mCanSelectTabs.remove(position);
+                mTabs.add(remove);
+
+                selectAdapter.notifyDataSetChanged();
+                canSelectAdapter.notifyDataSetChanged();
+
+                canSelectAdapter.notifyItemRemoved(position);
+                selectAdapter.notifyItemInserted(mTabs.size());
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+
+            }
+        });
+
+        inflate.findViewById(R.id.close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addTab();
+                initFragmentPagers();
+                myPagerAdapter.notifyDataSetChanged();
+                pw.dismiss();
+            }
+        });
     }
 
     /**
@@ -71,7 +195,8 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
      * 初始化ViewPager
      */
     private void initViewPager() {
-        mViewPager.setAdapter(new MyPagerAdapter(getChildFragmentManager(), mPagers, mTabs));
+        myPagerAdapter = new MyPagerAdapter(getChildFragmentManager(), mPagers, mTabs);
+        mViewPager.setAdapter(myPagerAdapter);
     }
 
     /**
@@ -79,16 +204,23 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
      */
     private void addTab() {
         LogUtil.e(mTabs.size() + "");
+        mTabLayout.removeAllTabs();
         for (String tab : mTabs) {
             mTabLayout.addTab(mTabLayout.newTab().setText(tab));
         }
+    }
+
+    /**
+     * 初始化tab
+     */
+    private void initTab() {
         mTabLayout.setupWithViewPager(mViewPager, true);
         mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 LogUtil.e("当前tab" + tab.getPosition());
-                newsType = tab.getPosition();
-                mPresenter.LoadNewsData(newsType);
+                String tabValue = tab.getText().toString();
+                mPresenter.LoadNewsData(tabValue);
             }
 
             @Override
@@ -103,27 +235,34 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         });
     }
 
-
     /**
      * 初始化tab
      * ,top(头条，默认),shehui(社会),guonei(国内),guoji(国际),
      * yule(娱乐),tiyu(体育)junshi(军事),keji(科技),caijing(财经),shishang(时尚)
      */
     private void initTabList() {
-        if (mTabs == null) {
-            mTabs = new ArrayList<>();
-        }
+        Set<String> set = mSPutils.getStringSet(TABS_SELECT, new ArraySet());
         mTabs.clear();
-        mTabs.add("头条");
-        mTabs.add("社会");
-        mTabs.add("国内");
-        mTabs.add("国际");
-        mTabs.add("娱乐");
-        mTabs.add("体育");
-        mTabs.add("军事");
-        mTabs.add("科技");
-        mTabs.add("财经");
-        mTabs.add("时尚");
+        mTabs.addAll(set);
+        LogUtil.e("mTab:" + mTabs.size());
+        if (mTabs != null && mTabs.size() <= 0 && !mSPutils.isExist(TABS_SELECT)) {
+            mTabs.add(API.typeValue[0]);
+            mTabs.add(API.typeValue[1]);
+            mTabs.add(API.typeValue[2]);
+            mTabs.add(API.typeValue[3]);
+            mTabs.add(API.typeValue[4]);
+        }
+        set = mSPutils.getStringSet(TABS_CAN_SELECT, new ArraySet());
+        mCanSelectTabs.clear();
+        mCanSelectTabs.addAll(set);
+        LogUtil.e("mCanSelectTabs:" + mCanSelectTabs.size());
+        if (mCanSelectTabs != null && mCanSelectTabs.size() <= 0 && !mSPutils.isExist(TABS_CAN_SELECT)) {
+            mCanSelectTabs.add(API.typeValue[5]);
+            mCanSelectTabs.add(API.typeValue[6]);
+            mCanSelectTabs.add(API.typeValue[7]);
+            mCanSelectTabs.add(API.typeValue[8]);
+            mCanSelectTabs.add(API.typeValue[9]);
+        }
     }
 
     @Override
@@ -136,4 +275,29 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         LogUtil.e("数据类型：" + newsType + ":" + data.size());
         ListenerManager.getInstance().sendBroadCast(data, newsType);
     }
+
+
+    @OnClick(R.id.tabs_switcher)
+    public void onViewClicked() {
+        pw.showAsDropDown(mSpace);
+        pw.showAtLocation(mSpace, Gravity.TOP | Gravity.CENTER, 0, 0);
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        if (pw != null) {
+            pw.dismiss();
+        }
+        Set<String> set = new ArraySet<>();
+        set.addAll(mTabs);
+        mSPutils.putStringSet(TABS_SELECT, set);
+        set.clear();
+        set.addAll(mCanSelectTabs);
+        mSPutils.putStringSet(TABS_CAN_SELECT, set)
+                .commit();
+        super.onDestroyView();
+    }
+
+
 }

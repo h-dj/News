@@ -44,7 +44,7 @@ public class NewsContentFragment extends BaseFragment implements IListener {
         super.init();
         ListenerManager.getInstance().registerListtener(this);
         mDataBeen = new ArrayList<>();
-        mMyRVAdapter = new MyRVAdapter(getContext(), R.layout.news_item, mDataBeen);
+        mMyRVAdapter = new MyRVAdapter(mContext, R.layout.news_item, mDataBeen);
         mMyRVAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -67,8 +67,8 @@ public class NewsContentFragment extends BaseFragment implements IListener {
      */
     private void initRecyclerView() {
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mMyRVAdapter);
     }

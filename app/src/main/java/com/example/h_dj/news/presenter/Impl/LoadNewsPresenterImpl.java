@@ -32,8 +32,8 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     }
 
     @Override
-    public void LoadNewsData(int position) {
-        String url = API.getRequestUrl(position);
+    public void LoadNewsData(String value) {
+        String url = API.getRequestUrl(value);
         LogUtil.e(url);
         if (TextUtils.isEmpty(url)) {
             mINewsFragment.failed(mContext.getString(R.string.error_url));

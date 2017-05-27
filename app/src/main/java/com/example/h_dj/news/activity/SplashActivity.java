@@ -1,8 +1,9 @@
 package com.example.h_dj.news.activity;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
+
+import com.example.h_dj.news.utils.SPutils;
 
 /**
  * Created by H_DJ on 2017/5/15.
@@ -57,17 +58,19 @@ public class SplashActivity extends BaseActivity {
      * 设置app启动次数
      */
     private void setCount() {
-        SharedPreferences sp = getSharedPreferences(COUNT, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putInt(COUNT, ++count);
-        editor.commit();
+        SPutils.newInstance(this)
+                .build(COUNT, MODE_PRIVATE)
+                .putInt(COUNT, ++count)
+                .commit();
     }
+
     /**
      * 获取app启动次数
      */
     private void getCount() {
-        SharedPreferences sp = getSharedPreferences(COUNT, MODE_PRIVATE);
-        count = sp.getInt(COUNT, 0);
+        count = SPutils.newInstance(this)
+                .build(COUNT, MODE_PRIVATE)
+                .getInt(COUNT, 0);
     }
 
 

@@ -8,6 +8,19 @@
     <string name="error_url">请求url错误</string>
     <string name="error_network">网络异常</string>
     <string name="item_title">标题</string>
+    <string name="select_tabs">切换栏目</string>
+    <string name="click_select_tabs">点击选择更多栏目</string>
+    <string name="tab">栏目</string>
+    <string name="seting">设置</string>
+    <string name="login_name">立即登陆</string>
+    <string name="collection">收藏</string>
+    <string name="comment">跟帖</string>
+    <string name="gold">金币</string>
+    <string name="myMsg">我的消息</string>
+    <string name="goldShop">金币商城</string>
+    <string name="myTest">我的任务</string>
+    <string name="myWallet">我的钱包</string>
+    <string name="myEmail">我的邮箱</string>
 
 
 </resources>
