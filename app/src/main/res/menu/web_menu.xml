@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+    <item
+        android:id="@+id/comment"
+        android:title="0 跟帖"
+        app:showAsAction="always|withText"/>
     <item
         android:id="@+id/share"
+        android:icon="@drawable/share"
         android:title="分享"
         />
 
@@ -12,13 +19,13 @@
         />
     <item
         android:id="@+id/fontSize"
-        android:icon="@drawable/collection"
+        android:icon="@drawable/font"
         android:title="正文字号"
         />
 
     <item
         android:id="@+id/nightMode"
-        android:icon="@drawable/collection"
+        android:icon="@drawable/night"
         android:title="夜间模式"
         />
 

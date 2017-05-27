@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 
 import com.example.h_dj.news.bean.User;
 
@@ -91,5 +92,15 @@ public abstract class BaseActivity extends AppCompatActivity {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 初始化toolbar
+     */
+    protected void initToolbar(Toolbar mToolbar) {
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
 }

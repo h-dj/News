@@ -4,6 +4,7 @@ package com.example.h_dj.news.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,9 +24,13 @@ import com.tencent.smtt.sdk.WebChromeClient;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
+import java.lang.reflect.Method;
+
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.CountListener;
 import cn.bmob.v3.listener.SaveListener;
 
 /**
@@ -46,6 +51,8 @@ public class WebActivity extends BaseActivity {
 
 
     private String url;
+    private Integer commentCount = 0;//跟帖数
+    private Menu mMenu;
 
     @Override
     protected int getLayoutId() {
@@ -64,7 +71,7 @@ public class WebActivity extends BaseActivity {
             }
         }
         initProgress();
-        initToolbar();
+        initToolbar(mToolbar);
         initWeb();
     }
 
@@ -75,20 +82,67 @@ public class WebActivity extends BaseActivity {
         mProgress.setMax(100);
     }
 
-    /**
-     * 初始化toolbar
-     */
-    private void initToolbar() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        new MenuInflater(this).inflate(R.menu.web_menu, menu);
+        mMenu = menu;
+        setIconsVisible(menu, true);
+        MenuInflater inflater = new SupportMenuInflater(this);
+        inflater.inflate(R.menu.web_menu, menu);
+        getCommentCount();
         return true;
+    }
+
+    /**
+     * 设置评论数
+     */
+    public void setCommentCount(Integer commentCount) {
+        mMenu.findItem(R.id.comment).setTitle(String.format("%s 跟帖", commentCount));
+    }
+
+    /**
+     * 获取评论数
+     *
+     * @return
+     */
+    private void getCommentCount() {
+        BmobQuery<CommentBean> query = new BmobQuery<CommentBean>();
+        query.addQueryKeys("commentUrl");
+        query.addWhereEqualTo("commentUrl", url);
+        query.count(CommentBean.class, new CountListener() {
+            @Override
+            public void done(Integer count, BmobException e) {
+                if (e == null) {
+                    commentCount = count;
+                    setCommentCount(commentCount);
+                    LogUtil.e("CommentCount:" + count + ":url" + url + ":" + mWeb.getOriginalUrl());
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+    }
+
+    /**
+     * 解决menu不显示图标问题
+     *
+     * @param menu
+     * @param flag
+     */
+    private void setIconsVisible(Menu menu, boolean flag) {
+        //判断menu是否为空
+        if (menu != null) {
+            try {
+                //如果不为空,就反射拿到menu的setOptionalIconsVisible方法
+                Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+                //暴力访问该方法
+                method.setAccessible(true);
+                //调用该方法显示icon
+                method.invoke(menu, flag);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -96,6 +150,11 @@ public class WebActivity extends BaseActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 this.finish();
+                break;
+            case R.id.comment:
+                Bundle bundle = new Bundle();
+                bundle.putString("url", mWeb.getOriginalUrl());
+                goTo(CommentListActivity.class, bundle);
                 break;
             default:
                 return super.onOptionsItemSelected(item);
@@ -206,6 +265,9 @@ public class WebActivity extends BaseActivity {
             public void done(String objectId, BmobException e) {
                 if (e == null) {
                     Toast.makeText(WebActivity.this, "评论成功", Toast.LENGTH_SHORT).show();
+                    commentCount++;
+                    setCommentCount(commentCount);
+                    mComment.setText("");
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
                     Toast.makeText(WebActivity.this, "评论失败", Toast.LENGTH_SHORT).show();

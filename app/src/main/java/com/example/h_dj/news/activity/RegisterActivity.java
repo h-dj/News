@@ -116,6 +116,7 @@ public class RegisterActivity extends BaseActivity {
         User bu = new User();
         bu.setUsername(username);
         bu.setPassword(password);
+        bu.setUser_from("广东广州");
         //注意：不能用save方法进行注册
         showProgressDialog("注册", "注册中...");
         bu.signUp(new SaveListener<User>() {

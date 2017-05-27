@@ -50,6 +50,8 @@
         <activity android:name=".activity.LoginActivity"/>
         <!--注册页-->
         <activity android:name=".activity.RegisterActivity"/>
+        <!--评论页-->
+        <activity android:name=".activity.CommentListActivity"/>
     </application>
 
 </manifest>
