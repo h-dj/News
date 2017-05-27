@@ -1,6 +1,7 @@
 package com.example.h_dj.news.activity;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import butterknife.Unbinder;
 public abstract class BaseActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -23,7 +25,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         if (getLayoutId() != 0) {
             setContentView(getLayoutId());
         }
-
         unbinder = ButterKnife.bind(this);
         init();
     }
@@ -49,7 +50,23 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         unbinder.unbind();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
         super.onDestroy();
+    }
 
+    /**
+     * 显示进度
+     */
+    public void showProgressDialog(String title, String msg) {
+        progressDialog = ProgressDialog.show(this, title, msg, false);
+    }
+
+    /**
+     * 隐藏进度
+     */
+    public void hiddenProgressDialog() {
+        progressDialog.dismiss();
     }
 }

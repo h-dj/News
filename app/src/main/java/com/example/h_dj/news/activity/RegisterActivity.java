@@ -4,13 +4,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.h_dj.news.R;
@@ -19,15 +17,13 @@ import com.example.h_dj.news.utils.LogUtil;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.LogInListener;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
- * Created by H_DJ on 2017/5/26.
+ * Created by H_DJ on 2017/5/27.
  */
-public class LoginActivity extends BaseActivity {
-
+public class RegisterActivity extends BaseActivity {
     private static final int EDITE_USER = 1;
     private static final int EDITE_PWD = 2;
     @BindView(R.id.toolbar)
@@ -38,34 +34,22 @@ public class LoginActivity extends BaseActivity {
     ImageView mUserClear;
     @BindView(R.id.user_password)
     EditText mUserPassword;
-    @BindView(R.id.forgetPwd)
-    TextView mForgetPwd;
     @BindView(R.id.pwd_clear)
     ImageView mPwdClear;
-    @BindView(R.id.login)
-    Button mLogin;
     @BindView(R.id.register)
-    TextView mRegister;
+    Button mRegister;
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_login;
+        return R.layout.activity_register;
     }
-
 
     @Override
     protected void init() {
         super.init();
         initToolbar();
         initEditText();
-    }
 
-    /**
-     * 设置EditText文本监听
-     */
-    private void initEditText() {
-        mUserName.addTextChangedListener(new MyTextWatcher(EDITE_USER));
-        mUserPassword.addTextChangedListener(new MyTextWatcher(EDITE_PWD));
     }
 
     /**
@@ -73,7 +57,7 @@ public class LoginActivity extends BaseActivity {
      */
     private void initToolbar() {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(getString(R.string.login_title));
+        getSupportActionBar().setTitle(getString(R.string.register_title));
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
@@ -90,57 +74,63 @@ public class LoginActivity extends BaseActivity {
 
     }
 
-    @OnClick({R.id.user_clear, R.id.forgetPwd, R.id.pwd_clear, R.id.login, R.id.register})
+
+    /**
+     * 设置EditText文本监听
+     */
+    private void initEditText() {
+        mUserName.addTextChangedListener(new MyTextWatcher(EDITE_USER));
+        mUserPassword.addTextChangedListener(new MyTextWatcher(EDITE_PWD));
+    }
+
+
+    @OnClick({R.id.user_clear, R.id.pwd_clear, R.id.register})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.user_clear:
                 mUserName.setText("");
                 break;
-            case R.id.forgetPwd:
-                break;
             case R.id.pwd_clear:
                 mUserPassword.setText("");
                 break;
-            case R.id.login:
-                login();
-                break;
             case R.id.register:
-                goTo(RegisterActivity.class);
+                register();
                 break;
         }
     }
 
     /**
-     * 登陆
+     * 注册
      */
-    private void login() {
+    private void register() {
         String username = mUserName.getText().toString().trim();
         String password = mUserPassword.getText().toString().trim();
         if (TextUtils.isEmpty(username)) {
-            Toast.makeText(LoginActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegisterActivity.this, "用户名不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
         if (TextUtils.isEmpty(password)) {
-            Toast.makeText(LoginActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RegisterActivity.this, "密码不能为空", Toast.LENGTH_SHORT).show();
             return;
         }
-        showProgressDialog("登陆", "登陆中...");
-        BmobUser.loginByAccount(username, password, new LogInListener<User>() {
-
+        User bu = new User();
+        bu.setUsername(username);
+        bu.setPassword(password);
+        //注意：不能用save方法进行注册
+        showProgressDialog("注册", "注册中...");
+        bu.signUp(new SaveListener<User>() {
             @Override
-            public void done(User user, BmobException e) {
-                if (user != null) {
-                    Log.i("smile", "用户登陆成功");
+            public void done(User s, BmobException e) {
+                if (e == null) {
+                    LogUtil.e("注册成功");
                     finish();
-
                 } else {
-                    LogUtil.e("登陆失败：" + e.getLocalizedMessage());
+                    LogUtil.e("注册失败");
                 }
                 hiddenProgressDialog();
             }
         });
     }
-
 
     /**
      * 监听EditText文本变化

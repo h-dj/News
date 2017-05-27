@@ -49,7 +49,6 @@ public class MyFragment extends BaseFragment {
     @Override
     protected void init() {
         super.init();
-
     }
 
 

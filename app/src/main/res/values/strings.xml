@@ -21,6 +21,8 @@
     <string name="myTest">我的任务</string>
     <string name="myWallet">我的钱包</string>
     <string name="myEmail">我的邮箱</string>
+    <string name="login_title">登陆</string>
+    <string name="register_title">注册</string>
 
 
 </resources>
