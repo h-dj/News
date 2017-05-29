@@ -1,9 +1,11 @@
 package com.example.h_dj.news.activity;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -18,26 +20,32 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.bean.CollectBean;
 import com.example.h_dj.news.bean.CommentBean;
 import com.example.h_dj.news.utils.LogUtil;
 import com.tencent.smtt.sdk.WebChromeClient;
+import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
 
 import java.lang.reflect.Method;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.CountListener;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * Created by H_DJ on 2017/5/17.
  */
 
 public class WebActivity extends BaseActivity {
+
     @BindView(R.id.web)
     WebView mWeb;
     @BindView(R.id.toolbar)
@@ -53,6 +61,32 @@ public class WebActivity extends BaseActivity {
     private String url;
     private Integer commentCount = 0;//跟帖数
     private Menu mMenu;
+    /**
+     * 当前网页被收藏的id
+     */
+    private String currentCollectId = null;
+    private boolean isCollection;
+    /**
+     * 字体
+     */
+    private CharSequence[] mFontSizesTag = new CharSequence[]{
+            "特大号字",
+            "大号字",
+            "正常",
+            "小号字",
+            "特小号字"
+    };
+    /**
+     * 字体大小
+     */
+    private WebSettings.TextSize[] mFontSizesValue = new WebSettings.TextSize[]{
+            WebSettings.TextSize.LARGEST,
+            WebSettings.TextSize.LARGER,
+            WebSettings.TextSize.NORMAL,
+            WebSettings.TextSize.SMALLER,
+            WebSettings.TextSize.SMALLEST
+    };
+    private int currentFontSize = 2;
 
     @Override
     protected int getLayoutId() {
@@ -73,6 +107,7 @@ public class WebActivity extends BaseActivity {
         initProgress();
         initToolbar(mToolbar);
         initWeb();
+
     }
 
     /**
@@ -90,6 +125,7 @@ public class WebActivity extends BaseActivity {
         MenuInflater inflater = new SupportMenuInflater(this);
         inflater.inflate(R.menu.web_menu, menu);
         getCommentCount();
+        isCollection();
         return true;
     }
 
@@ -156,10 +192,149 @@ public class WebActivity extends BaseActivity {
                 bundle.putString("url", mWeb.getOriginalUrl());
                 goTo(CommentListActivity.class, bundle);
                 break;
+            case R.id.fontSize:
+                showSelectFontSizeDialog();
+                break;
+            case R.id.nightMode:
+
+                break;
+            case R.id.collection:
+                if (isCollection) {
+                    cancleCollection();
+                    isCollection = false;
+                } else {
+                    addCollection();
+                    isCollection = true;
+                }
+                setCollectionStyle(isCollection);
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
+    }
+
+
+    /**
+     * 添加收藏
+     *
+     * @return
+     */
+    public void addCollection() {
+        if (checkLogin()) {
+            CollectBean collectBean = new CollectBean();
+            //注意：不能调用gameScore.setObjectId("")方法
+            collectBean.setUserId(mUser.getObjectId());
+            collectBean.setCollectTitle(mWeb.getTitle());
+            collectBean.setCollectUrl(mWeb.getUrl());
+            collectBean.save(new SaveListener<String>() {
+                @Override
+                public void done(String objectId, BmobException e) {
+                    if (e == null) {
+                        setCollectionStyle(true);
+                        Toast.makeText(WebActivity.this, "收藏成功", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                        Toast.makeText(WebActivity.this, "收藏失败", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        } else {
+            goTo(LoginActivity.class);
+        }
+    }
+
+    /**
+     * 设置收藏菜单的样式
+     *
+     * @param isAdd
+     */
+    public void setCollectionStyle(boolean isAdd) {
+        LogUtil.e("设置收藏：" + isAdd);
+        MenuItem item = mMenu.findItem(R.id.collection);
+        if (isAdd) {
+            item.setIcon(R.drawable.collection_select);
+            item.setTitle("取消收藏");
+        } else {
+            item.setIcon(R.drawable.collection);
+            item.setTitle("收藏");
+        }
+    }
+
+    /**
+     * 取消收藏
+     */
+    public void cancleCollection() {
+        CollectBean gameScore = new CollectBean();
+        gameScore.setObjectId(currentCollectId);
+        gameScore.delete(new UpdateListener() {
+            @Override
+            public void done(BmobException e) {
+                if (e == null) {
+                    Log.i("bmob", "成功");
+                    setCollectionStyle(false);
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+            }
+        });
+    }
+
+    /**
+     * 查询是否收藏
+     *
+     * @return
+     */
+    public void isCollection() {
+        //只返回Person表的objectId这列的值
+        BmobQuery<CollectBean> bmobQuery = new BmobQuery<CollectBean>();
+        bmobQuery.addQueryKeys("objectId");
+        bmobQuery.addWhereEqualTo("collectUrl", mWeb.getUrl());
+        bmobQuery.findObjects(new FindListener<CollectBean>() {
+            @Override
+            public void done(List<CollectBean> object, BmobException e) {
+                if (e == null) {
+                    currentCollectId = object.get(0).getObjectId();
+                    isCollection = true;
+                    LogUtil.e("bmob成功：" + currentCollectId + "," + isCollection);
+                } else {
+                    currentCollectId = null;
+                    isCollection = false;
+                    LogUtil.e("bmob失败：" + e.getMessage() + "," + e.getErrorCode());
+                }
+                setCollectionStyle(isCollection);
+            }
+        });
+    }
+
+    /**
+     * 显示选择字体的对话框
+     */
+    private void showSelectFontSizeDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("正文字号")
+                .setSingleChoiceItems(mFontSizesTag, currentFontSize, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        currentFontSize = which;
+                    }
+                })
+                .setCancelable(false)
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        setFontSize(mFontSizesValue[currentFontSize]);
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .create()
+                .show();
     }
 
     @Override
@@ -220,6 +395,24 @@ public class WebActivity extends BaseActivity {
 
     }
 
+    /**
+     * 设置字体大小
+     *
+     * @param fontSize
+     */
+    public void setFontSize(WebSettings.TextSize fontSize) {
+        if (fontSize == WebSettings.TextSize.LARGEST) {
+            mWeb.getSettings().setTextSize(WebSettings.TextSize.LARGEST);
+        } else if (fontSize == WebSettings.TextSize.LARGER) {
+            mWeb.getSettings().setTextSize(WebSettings.TextSize.LARGER);
+        } else if (fontSize == WebSettings.TextSize.SMALLER) {
+            mWeb.getSettings().setTextSize(WebSettings.TextSize.SMALLER);
+        } else if (fontSize == WebSettings.TextSize.SMALLEST) {
+            mWeb.getSettings().setTextSize(WebSettings.TextSize.SMALLEST);
+        } else {
+            mWeb.getSettings().setTextSize(WebSettings.TextSize.NORMAL);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -232,6 +425,7 @@ public class WebActivity extends BaseActivity {
             //只会webview访问历史记录里的所有记录除了当前访问记录
             mWeb.clearHistory();
         }
+
         super.onDestroy();
     }
 

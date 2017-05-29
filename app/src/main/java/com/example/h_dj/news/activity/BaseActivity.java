@@ -34,6 +34,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         init();
     }
 
+
     /**
      * 初始化方法
      */

@@ -33,7 +33,8 @@ dependencies {
     /*material design*/
     compile 'com.android.support:design:25.3.0'
     /*gson 与bmob依赖冲突*/
-    //    compile('com.google.code.gson:gson:2.8.0')
+//    compile('com.google.code.gson:gson:2.8.0')
+
     /*图片加载*/
     compile 'com.github.bumptech.glide:glide:3.8.0'
     /*底部导航*/

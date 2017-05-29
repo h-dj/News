@@ -1,10 +1,10 @@
-package com.example.h_dj.news.entity;
+package com.example.h_dj.news;
 
 /**
  * Created by H_DJ on 2017/5/17.
  */
 
-public class API {
+public class Contracts {
 
     //http://v.juhe.cn/toutiao/index?type=top&key=APPKEY
     public final static String index = "http://v.juhe.cn/toutiao/index";

@@ -9,6 +9,8 @@
         <item name="android:windowAnimationStyle">@style/AnimaActivity</item>
     </style>
 
+
+
     <style name="splashTheme" parent="AppTheme">
         <item name="android:background">@drawable/splash</item>
         <item name="android:windowFullscreen">true</item>

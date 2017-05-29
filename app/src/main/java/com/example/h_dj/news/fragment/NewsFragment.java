@@ -27,7 +27,7 @@ import com.example.h_dj.news.adapter.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyPagerAdapter;
 import com.example.h_dj.news.adapter.MyTabSelectAdapter;
 import com.example.h_dj.news.bean.NewsBean;
-import com.example.h_dj.news.entity.API;
+import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
 import com.example.h_dj.news.utils.LogUtil;
@@ -246,22 +246,22 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         mTabs.addAll(set);
         LogUtil.e("mTab:" + mTabs.size());
         if (mTabs != null && mTabs.size() <= 0 && !mSPutils.isExist(TABS_SELECT)) {
-            mTabs.add(API.typeValue[0]);
-            mTabs.add(API.typeValue[1]);
-            mTabs.add(API.typeValue[2]);
-            mTabs.add(API.typeValue[3]);
-            mTabs.add(API.typeValue[4]);
+            mTabs.add(Contracts.typeValue[0]);
+            mTabs.add(Contracts.typeValue[1]);
+            mTabs.add(Contracts.typeValue[2]);
+            mTabs.add(Contracts.typeValue[3]);
+            mTabs.add(Contracts.typeValue[4]);
         }
         set = mSPutils.getStringSet(TABS_CAN_SELECT, new ArraySet());
         mCanSelectTabs.clear();
         mCanSelectTabs.addAll(set);
         LogUtil.e("mCanSelectTabs:" + mCanSelectTabs.size());
         if (mCanSelectTabs != null && mCanSelectTabs.size() <= 0 && !mSPutils.isExist(TABS_CAN_SELECT)) {
-            mCanSelectTabs.add(API.typeValue[5]);
-            mCanSelectTabs.add(API.typeValue[6]);
-            mCanSelectTabs.add(API.typeValue[7]);
-            mCanSelectTabs.add(API.typeValue[8]);
-            mCanSelectTabs.add(API.typeValue[9]);
+            mCanSelectTabs.add(Contracts.typeValue[5]);
+            mCanSelectTabs.add(Contracts.typeValue[6]);
+            mCanSelectTabs.add(Contracts.typeValue[7]);
+            mCanSelectTabs.add(Contracts.typeValue[8]);
+            mCanSelectTabs.add(Contracts.typeValue[9]);
         }
     }
 

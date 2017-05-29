@@ -10,7 +10,6 @@ public class CollectBean extends BmobObject {
 
     private String collectTitle;
     private String collectUrl;
-    private String collectTime;
     private String userId;
 
     public String getCollectTitle() {
@@ -29,13 +28,6 @@ public class CollectBean extends BmobObject {
         this.collectUrl = collectUrl;
     }
 
-    public String getCollectTime() {
-        return collectTime;
-    }
-
-    public void setCollectTime(String collectTime) {
-        this.collectTime = collectTime;
-    }
 
     public String getUserId() {
         return userId;

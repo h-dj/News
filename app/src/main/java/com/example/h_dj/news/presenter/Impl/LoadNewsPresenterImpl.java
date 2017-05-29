@@ -6,7 +6,7 @@ import android.text.TextUtils;
 import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.bean.NewsBean;
-import com.example.h_dj.news.entity.API;
+import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.utils.GsonUtils;
 import com.example.h_dj.news.utils.LogUtil;
@@ -33,7 +33,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     @Override
     public void LoadNewsData(String value) {
-        String url = API.getRequestUrl(value);
+        String url = Contracts.getRequestUrl(value);
         LogUtil.e(url);
         if (TextUtils.isEmpty(url)) {
             mINewsFragment.failed(mContext.getString(R.string.error_url));

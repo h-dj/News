@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
     >
@@ -12,48 +11,38 @@
         android:layout_below="@+id/toolbar">
     </com.tencent.smtt.sdk.WebView>
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <include layout="@layout/app_bar"/>
 
-    <ProgressBar
-        android:id="@+id/progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/toolbar"
-        android:maxHeight="5dp"
-        android:minHeight="5dp"
-        android:progressDrawable="@drawable/progressbar"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:background="@color/icons"
-        android:layout_height="wrap_content"
+    <ScrollView
         android:layout_alignParentBottom="true"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/comment"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:drawableLeft="@drawable/comment"
-            android:drawablePadding="10dp"
-            android:hint="@string/comment"
-            android:paddingLeft="10dp"/>
 
-        <Button
-            android:id="@+id/send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/send"
-            android:textColor="@color/secondary_text"/>
-    </LinearLayout>
+            android:background="@color/icons"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:drawableLeft="@drawable/comment"
+                android:drawablePadding="10dp"
+                android:hint="@string/comment"
+                android:paddingLeft="10dp"/>
+
+            <Button
+                android:id="@+id/send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/send"
+                android:textColor="@color/secondary_text"/>
+        </LinearLayout>
+    </ScrollView>
 
 </RelativeLayout>

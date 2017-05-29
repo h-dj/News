@@ -30,7 +30,6 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
         holder.setText(R.id.item_date, dataBean.getDate());
         Glide.with(mContext)
                 .load(dataBean.getThumbnail_pic_s())
-                .placeholder(R.mipmap.ic_launcher)
                 .centerCrop()
                 .error(R.mipmap.ic_launcher)
                 .into((ImageView) holder.getView(R.id.item_pic));
