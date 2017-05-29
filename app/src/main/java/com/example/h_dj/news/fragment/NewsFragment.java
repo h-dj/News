@@ -20,18 +20,20 @@ import android.widget.PopupWindow;
 import android.widget.Space;
 import android.widget.Toast;
 
+import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.Inteface.INewsFragment;
-import com.example.h_dj.news.Inteface.ListenerManager;
+import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.adapter.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyPagerAdapter;
 import com.example.h_dj.news.adapter.MyTabSelectAdapter;
 import com.example.h_dj.news.bean.NewsBean;
-import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
 import com.example.h_dj.news.utils.LogUtil;
 import com.example.h_dj.news.utils.SPutils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +41,6 @@ import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-import butterknife.Unbinder;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -60,7 +61,7 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     Space mSpace;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    Unbinder unbinder;
+
 
     private ILoadNewsPresenter mPresenter;
 
@@ -273,7 +274,7 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     @Override
     public void success(List<NewsBean.ResultBean.DataBean> data) {
         LogUtil.e("数据类型：" + newsType + ":" + data.size());
-        ListenerManager.getInstance().sendBroadCast(data, newsType);
+        EventBus.getDefault().post(new MyMessageEvent<>(data,MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
     }
 
 

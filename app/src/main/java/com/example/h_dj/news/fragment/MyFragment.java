@@ -2,9 +2,11 @@ package com.example.h_dj.news.fragment;
 
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.activity.CollectionActivity;
 import com.example.h_dj.news.activity.LoginActivity;
 import com.example.h_dj.news.bean.User;
 import com.example.h_dj.news.utils.LogUtil;
@@ -66,26 +68,33 @@ public class MyFragment extends BaseFragment {
      * 判断是否已登陆
      */
     private void initUserInfo() {
-        if (checkLogin()) {
-            LogUtil.e("当前用户id:" + mUser.getObjectId());
-            mUserName.setText(mUser.getUsername());
+        if (mApp.checkLogin()) {
+            LogUtil.e("当前用户id:" + mApp.mUser.getObjectId());
+            mUserName.setText(mApp.mUser.getUsername());
         } else {
             mUserName.setText(getString(R.string.login_name));
         }
     }
 
 
-    @OnClick({R.id.setting, R.id.profile_image, R.id.user_name})
+    @OnClick({R.id.setting, R.id.profile_image, R.id.user_name, R.id.collection})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
                 break;
             case R.id.profile_image:
             case R.id.user_name:
-                if (mUser != null) {
+                if (mApp.mUser != null) {
 
                 } else {
                     goTo(LoginActivity.class, null);
+                }
+                break;
+            case R.id.collection:
+                if (mApp.checkLogin()) {
+                    goTo(CollectionActivity.class, null);
+                } else {
+                    Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }

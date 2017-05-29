@@ -8,11 +8,10 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
-import com.example.h_dj.news.bean.User;
+import com.example.h_dj.news.App;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.bmob.v3.BmobUser;
 
 /**
  * Created by H_DJ on 2017/5/15.
@@ -22,7 +21,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
     private ProgressDialog progressDialog;
-    protected User mUser;
+    protected App mApp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -39,6 +38,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      * 初始化方法
      */
     protected void init() {
+        mApp = (App) getApplication();
     }
 
     /**
@@ -81,26 +81,14 @@ public abstract class BaseActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
-    /**
-     * 判断用户是已否登陆
-     *
-     * @return
-     */
-    public boolean checkLogin() {
-        mUser = BmobUser.getCurrentUser(User.class);
-        if (mUser != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+
 
     /**
      * 初始化toolbar
      */
-    protected void initToolbar(Toolbar mToolbar) {
+    protected void initToolbar(Toolbar mToolbar, String title) {
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }

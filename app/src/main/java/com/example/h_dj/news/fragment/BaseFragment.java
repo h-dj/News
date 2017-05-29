@@ -1,6 +1,7 @@
 package com.example.h_dj.news.fragment;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.h_dj.news.bean.User;
+import com.example.h_dj.news.App;
 import com.example.h_dj.news.utils.LogUtil;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import cn.bmob.v3.BmobUser;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -25,7 +25,7 @@ public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
     protected Context mContext;
-    protected User mUser;
+    protected App mApp;
 
     @Nullable
     @Override
@@ -38,6 +38,7 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void init() {
+        mApp = (App) ((Activity) mContext).getApplication();
     }
 
     protected abstract int getlayoutId();
@@ -65,17 +66,4 @@ public abstract class BaseFragment extends Fragment {
         mContext = context;
     }
 
-    /**
-     * 判断用户是已否登陆
-     *
-     * @return
-     */
-    public boolean checkLogin() {
-        mUser = BmobUser.getCurrentUser(User.class);
-        if (mUser != null) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 }

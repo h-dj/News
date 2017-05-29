@@ -61,7 +61,7 @@ public class CommentListActivity extends BaseActivity {
         }
 
         mPresenter = new LoadCommentListPresenterImpl(this);
-        initToolbar(mToolbar);
+        initToolbar(mToolbar, "");
         mCommentBeanList = new ArrayList<>();
         mAdapter = new MyCommentListAdapter(this, R.layout.comment_list, mCommentBeanList);
         initRecycleView();

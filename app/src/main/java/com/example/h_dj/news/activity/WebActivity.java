@@ -105,7 +105,7 @@ public class WebActivity extends BaseActivity {
             }
         }
         initProgress();
-        initToolbar(mToolbar);
+        initToolbar(mToolbar, "");
         initWeb();
 
     }
@@ -221,10 +221,10 @@ public class WebActivity extends BaseActivity {
      * @return
      */
     public void addCollection() {
-        if (checkLogin()) {
+        if (mApp.checkLogin()) {
             CollectBean collectBean = new CollectBean();
             //注意：不能调用gameScore.setObjectId("")方法
-            collectBean.setUserId(mUser.getObjectId());
+            collectBean.setUserId(mApp.mUser.getObjectId());
             collectBean.setCollectTitle(mWeb.getTitle());
             collectBean.setCollectUrl(mWeb.getUrl());
             collectBean.save(new SaveListener<String>() {
@@ -431,7 +431,7 @@ public class WebActivity extends BaseActivity {
 
     @OnClick(R.id.send)
     public void onViewClicked() {
-        if (checkLogin()) {
+        if (mApp.checkLogin()) {
             String comment = mComment.getText().toString().trim();
             if (TextUtils.isEmpty(comment)) {
                 Toast.makeText(WebActivity.this, "还没填写评论", Toast.LENGTH_SHORT).show();
@@ -451,7 +451,7 @@ public class WebActivity extends BaseActivity {
     private void sendComment(String comment) {
         CommentBean comments = new CommentBean();
         //注意：不能调用gameScore.setObjectId("")方法
-        comments.setUserId(mUser.getObjectId());
+        comments.setUserId(mApp.mUser.getObjectId());
         comments.setCommentContent(comment);
         comments.setCommentUrl(mWeb.getOriginalUrl());
         comments.save(new SaveListener<String>() {

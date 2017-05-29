@@ -59,7 +59,7 @@ public class LoginActivity extends BaseActivity {
     @Override
     protected void init() {
         super.init();
-        initToolbar();
+        initToolbar(mToolbar,getString(R.string.login_title));
         initEditText();
     }
 
@@ -71,15 +71,7 @@ public class LoginActivity extends BaseActivity {
         mUserPassword.addTextChangedListener(new MyTextWatcher(EDITE_PWD));
     }
 
-    /**
-     * 初始化toolbar
-     */
-    private void initToolbar() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(getString(R.string.login_title));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

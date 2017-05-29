@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center|left"
+        android:padding="10dp"
+        android:ellipsize="end"
+        android:text="新闻标题"
+        android:textColor="@color/primary_text"
+        android:textSize="15sp"/>
+
+    <TextView
+        android:id="@+id/createAtTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:paddingRight="10dp"
+        android:text="收藏时间"
+        android:textColor="@color/secondary_text"/>
+</LinearLayout>
+
