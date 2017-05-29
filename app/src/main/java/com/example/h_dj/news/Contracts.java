@@ -21,6 +21,7 @@ public class Contracts {
             "top", "shehui", "guonei", "guoji", "yule", "tiyu", "junshi", "keji", "caijing", "shishang"
     };
 
+    public final static String videoUrl = "http://c.3g.163.com/nc/video/home/1-10.html";
     private static int position = 0;
 
     public static String getRequestUrl(String type) {

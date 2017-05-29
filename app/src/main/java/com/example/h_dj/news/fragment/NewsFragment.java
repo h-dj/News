@@ -5,8 +5,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.ArraySet;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -87,7 +85,7 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         mPresenter = new LoadNewsPresenterImpl(mContext, this);
         mTabs = new ArrayList<>();
         mCanSelectTabs = new ArrayList<>();
-        initToolbar();
+        initToolbar(mToolbar,getString(R.string.app_name));
         initTabList();
         addTab();
         initTab();
@@ -96,13 +94,7 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         initPopupWindow();
     }
 
-    private void initToolbar() {
-        ((AppCompatActivity) mContext).setSupportActionBar(mToolbar);
-        ActionBar actionBar = ((AppCompatActivity) mContext).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle(getString(R.string.app_name));
-        }
-    }
+
 
     /**
      * 初始化popupwindow

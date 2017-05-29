@@ -2,6 +2,7 @@ package com.example.h_dj.news.utils;
 
 
 import com.example.h_dj.news.bean.NewsBean;
+import com.example.h_dj.news.bean.VideoNewsBean;
 import com.google.gson.Gson;
 
 
@@ -12,7 +13,12 @@ import com.google.gson.Gson;
 public class GsonUtils {
 
     private static Gson mGson = new Gson();
+
     public static NewsBean String2Obj(String result) {
         return mGson.fromJson(result, NewsBean.class);
+    }
+
+    public static VideoNewsBean String2VideoNewsBean(String result) {
+        return mGson.fromJson(result, VideoNewsBean.class);
     }
 }

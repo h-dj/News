@@ -21,8 +21,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <!--主页面-->
+        <!--在要播放视频的页面的父页面添加此属性
+        android:configChanges="orientation|screenSize|keyboardHidden"
+        才能调用全屏播放
+        -->
         <activity
             android:name=".activity.MainActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:screenOrientation="portrait"/>
 
         <!--启动页-->
@@ -54,6 +59,18 @@
         <activity android:name=".activity.CommentListActivity"/>
         <!--收藏页-->
         <activity android:name=".activity.CollectionActivity"/>
+        <!--视频播放页-->
+        <activity
+            android:name="com.tencent.smtt.sdk.VideoActivity"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="com.tencent.smtt.tbs.video.PLAY"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

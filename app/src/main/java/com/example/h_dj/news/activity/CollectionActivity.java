@@ -153,7 +153,6 @@ public class CollectionActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         if (mHandler != null) {
-            mHandler.removeCallbacksAndMessages(null);
             mHandler = null;
         }
         super.onDestroy();

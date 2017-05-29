@@ -6,4 +6,6 @@ package com.example.h_dj.news.presenter;
 
 public interface ILoadNewsPresenter {
     void LoadNewsData(String value);
+
+    void loadVideoNewsList();
 }
