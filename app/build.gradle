@@ -47,6 +47,6 @@ dependencies {
     compile 'cn.bmob.android:bmob-sdk:3.5.5'
     /*EvenBus*/
     compile 'org.greenrobot:eventbus:3.0.0'
-    /*X5内核*/
+    /*X5内核WebView*/
     compile files('libs/tbs_sdk_thirdapp_v3.1.0.1034_43100_sharewithdownload_obfs_20170301_182143.jar')
 }
