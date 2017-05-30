@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.PopupWindow;
-import android.widget.Space;
 import android.widget.Toast;
 
 import com.example.h_dj.news.Contracts;
@@ -55,8 +54,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     ViewPager mViewPager;
     @BindView(R.id.tabs_switcher)
     ImageButton mTabsSwitcher;
-    @BindView(R.id.spacer)
-    Space mSpace;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
 
@@ -85,7 +82,7 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         mPresenter = new LoadNewsPresenterImpl(mContext, this);
         mTabs = new ArrayList<>();
         mCanSelectTabs = new ArrayList<>();
-        initToolbar(mToolbar,getString(R.string.app_name));
+        initToolbar(mToolbar, getString(R.string.app_name));
         initTabList();
         addTab();
         initTab();
@@ -93,8 +90,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         initViewPager();
         initPopupWindow();
     }
-
-
 
     /**
      * 初始化popupwindow
@@ -133,7 +128,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
             public void onItemLongClick(View view, int position) {
             }
         });
-
         final RecyclerView rvCanSelected = (RecyclerView) inflate.findViewById(R.id.rv_can_select_tabs);
         rvCanSelected.setItemAnimator(new DefaultItemAnimator());
         rvCanSelected.setLayoutManager(new GridLayoutManager(mContext, 3));
@@ -154,7 +148,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
 
             @Override
             public void onItemLongClick(View view, int position) {
-
             }
         });
 
@@ -169,6 +162,8 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         });
     }
 
+
+
     /**
      * 初始化新闻页面
      */
@@ -180,8 +175,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         for (int i = 0; i < mTabs.size(); i++) {
             mPagers.add(new NewsContentFragment());
         }
-
-
     }
 
     /**
@@ -218,12 +211,10 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
             }
         });
     }
@@ -266,15 +257,14 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     @Override
     public void success(List<NewsBean.ResultBean.DataBean> data) {
         LogUtil.e("数据类型：" + newsType + ":" + data.size());
-        EventBus.getDefault().post(new MyMessageEvent<>(data,MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
+        EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
     }
 
 
     @OnClick(R.id.tabs_switcher)
     public void onViewClicked() {
-        pw.showAsDropDown(mSpace);
-        pw.showAtLocation(mSpace, Gravity.TOP | Gravity.CENTER, 0, 0);
-
+        pw.showAsDropDown(mToolbar);
+        pw.showAtLocation(mToolbar, Gravity.TOP | Gravity.CENTER, 0, mToolbar.getHeight());
     }
 
     @Override

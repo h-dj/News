@@ -6,7 +6,7 @@ import com.example.h_dj.news.R;
 import com.example.h_dj.news.fragment.MyFragment;
 import com.example.h_dj.news.fragment.NewsFragment;
 import com.example.h_dj.news.fragment.ReadFragment;
-import com.example.h_dj.news.fragment.RecoveryFragment;
+import com.example.h_dj.news.fragment.WeatherFragment;
 import com.example.h_dj.news.fragment.VideoFragment;
 
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class FragmentFactory {
                     fragment = new VideoFragment();
                     break;
                 case R.id.tab_recovery:
-                    fragment = new RecoveryFragment();
+                    fragment = new WeatherFragment();
                     break;
                 case R.id.tab_my:
                     fragment = new MyFragment();

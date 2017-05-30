@@ -22,6 +22,7 @@ public class Contracts {
     };
 
     public final static String videoUrl = "http://c.3g.163.com/nc/video/home/1-10.html";
+    public final static String weather = "http://cdn.weather.hao.360.cn/sed_api_weather_info.php?app=appGuide&code=";
     private static int position = 0;
 
     public static String getRequestUrl(String type) {
@@ -32,5 +33,10 @@ public class Contracts {
             }
         }
         return index + newsType + types[position] + key;
+    }
+
+
+    public static String getWeatherUrl(String cityCode) {
+        return weather + cityCode;
     }
 }

@@ -5,10 +5,6 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
     <include layout="@layout/app_bar"/>
-    <Space
-        android:id="@+id/spacer"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"/>
     <RelativeLayout
     android:id="@+id/rl"
     android:layout_width="match_parent"

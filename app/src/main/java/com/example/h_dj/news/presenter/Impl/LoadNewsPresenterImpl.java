@@ -3,15 +3,17 @@ package com.example.h_dj.news.presenter.Impl;
 import android.content.Context;
 import android.text.TextUtils;
 
+import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.bean.NewsBean;
-import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.bean.VideoNewsBean;
+import com.example.h_dj.news.bean.WeatherInfos;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.utils.GsonUtils;
 import com.example.h_dj.news.utils.LogUtil;
+import com.example.h_dj.news.utils.UnicodeUtils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -93,6 +95,36 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                                 EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
                             }
 
+                        }
+                    }
+                });
+    }
+
+    @Override
+    public void loadWeatherInfo(String cityCode) {
+        OkHttpUtils.get()
+                .url(Contracts.getWeatherUrl(cityCode))
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                        EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_WEATHER_FAILED));
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        WeatherInfos weatherInfos = null;
+                        try {
+                            String result = response.substring(response.indexOf("{"), response.lastIndexOf(")"));
+                            result = UnicodeUtils.decode(result.toCharArray());
+                            result=result.replaceAll("\"info\":\"\"", "\"info\":null");
+                            LogUtil.e(result);
+                            weatherInfos = GsonUtils.String2WeatherBean(result);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        if (weatherInfos != null) {
+                            EventBus.getDefault().post(new MyMessageEvent<>(weatherInfos, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SUCCESS));
                         }
                     }
                 });

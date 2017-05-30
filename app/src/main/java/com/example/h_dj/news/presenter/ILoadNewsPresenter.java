@@ -8,4 +8,6 @@ public interface ILoadNewsPresenter {
     void LoadNewsData(String value);
 
     void loadVideoNewsList();
+
+    void loadWeatherInfo(String cityCode);
 }

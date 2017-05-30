@@ -53,6 +53,12 @@ public class VideoFragment extends BaseFragment {
     }
 
     @Override
+    public void onHiddenChanged(boolean hidden) {
+        // TODO: 2017/5/29  还没解决 fragment 隐藏webView视频还在播放？？
+        mVideoAdapter.destoryWebView(hidden);
+    }
+
+    @Override
     protected void init() {
         super.init();
         //这个对宿主没什么影响，建议声明

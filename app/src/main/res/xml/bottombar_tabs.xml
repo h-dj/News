@@ -16,7 +16,7 @@
     <tab
         id="@+id/tab_recovery"
         icon="@drawable/tab_recovery_selector"
-        title="@string/recovery"/>
+        title="@string/weather"/>
     <tab
         id="@+id/tab_my"
         icon="@drawable/tab_my_selector"
