@@ -153,6 +153,7 @@ public class WeatherFragment extends BaseFragment {
         //设置天气预告
         List<WeatherInfos.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
         List<Temperature> temperatures = new ArrayList<>();
+        temperatures.clear();
         mForecastLayout.removeAllViews();
         for (WeatherInfos.HeWeather5Bean.DailyForecastBean forecastBean : daily_forecast) {
             View view = LayoutInflater.from(mContext).inflate(R.layout.forcast_item, mForecastLayout, false);

@@ -15,6 +15,10 @@
 
 ![image](https://github.com/naughty-pig/News/blob/master/gif/newsShootcut4.gif)
 
+- 天气界面
+
+![image](https://github.com/naughty-pig/News/blob/master/gif/weather.gif)
+
 #### 二、所用框架
 - [butterknife](https://github.com/JakeWharton/butterknife/)
 - [glide](https://mrfu.me/2016/02/27/Glide_Placeholders_&_Fade_Animations/)

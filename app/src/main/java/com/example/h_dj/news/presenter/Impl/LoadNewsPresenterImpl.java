@@ -198,13 +198,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     @Override
     public void loadCity(String url) {
-        final SPutils sPutils = SPutils.newInstance(mContext)
-                .build(WEATHER_AREA, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(WEATHER_CITY);
-        LogUtil.e("市：" + exist);
-        if (exist) {
-            decodeWeatherAreaResponse(sPutils.getString(WEATHER_CITY, null));
-        } else {
             OkHttpUtils.get()
                     .url(url)
                     .build()
@@ -216,22 +209,13 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            sPutils.putString(WEATHER_CITY, response).commit();
                             decodeWeatherAreaResponse(response);
                         }
                     });
-        }
     }
 
     @Override
     public void loadCounty(String url) {
-        final SPutils sPutils = SPutils.newInstance(mContext)
-                .build(WEATHER_AREA, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(WEATHER_CONUTY);
-        LogUtil.e("县：" + exist);
-        if (exist) {
-            decodeWeatherAreaResponse(sPutils.getString(WEATHER_CONUTY, null));
-        } else {
             OkHttpUtils.get()
                     .url(url)
                     .build()
@@ -243,11 +227,9 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            sPutils.putString(WEATHER_CONUTY, response).commit();
                             decodeWeatherAreaResponse(response);
                         }
                     });
-        }
     }
 
     /**

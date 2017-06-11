@@ -83,6 +83,7 @@ public class WeatherView extends View {
          * 每天天气的宽
          */
         int width = screenWidth / 3;
+        mTemperaturePoints.clear();
         for (int i = 0; i < mTemperatures.size(); i++) {
             int x = width * i + width / 2;
             int dy = (50 - mTemperatures.get(i).dayTemperature) * 10;
@@ -150,6 +151,7 @@ public class WeatherView extends View {
         mPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
 
         for (int i = 0; i < mTemperaturePoints.size(); i++) {
+            LogUtil.e(mTemperaturePoints.size() + "::");
             Temperature temperature = mTemperatures.get(i);
             TemperaturePoint point = mTemperaturePoints.get(i);
             canvas.drawText(temperature.dayTemperature + " ℃", point.x, point.dy - 50, mPaint);

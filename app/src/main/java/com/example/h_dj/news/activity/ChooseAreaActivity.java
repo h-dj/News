@@ -81,12 +81,14 @@ public class ChooseAreaActivity extends BaseActivity {
             @Override
             public void onItemClick(View view, int position) {
                 AreaInfo areaInfo = mCityList.get(position);
+                LogUtil.e(areaInfo.getName() + areaLevel);
                 if (areaLevel == 3) {
                     EventBus.getDefault().post(new MyMessageEvent<>(areaInfo, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS));
                     ChooseAreaActivity.this.finish();
                     return;
                 } else if (areaLevel == 2) {
                     url = url + "/" + areaInfo.getId();
+                    LogUtil.e(url);
                     mPresenter.loadCounty(url);
                 } else if (areaLevel == 1) {
                     url = Contracts.province + areaInfo.getId();
