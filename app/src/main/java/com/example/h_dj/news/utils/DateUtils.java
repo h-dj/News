@@ -2,6 +2,7 @@ package com.example.h_dj.news.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -52,5 +53,23 @@ public class DateUtils {
     public static String Times2String(long tims, String format) {
         Date date = new Date(tims);
         return Date2String(date, format);
+    }
+
+    /**
+     * 获取星期几
+     * @param date
+     * @return
+     */
+    public static String getWeek(Date date){
+        String[] weekOfDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+        Calendar calendar = Calendar.getInstance();
+        if(date != null){
+            calendar.setTime(date);
+        }
+        int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
+        if (w < 0){
+            w = 0;
+        }
+        return weekOfDays[w];
     }
 }

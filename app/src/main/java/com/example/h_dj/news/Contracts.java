@@ -20,9 +20,6 @@ public class Contracts {
     public final static String[] types = new String[]{
             "top", "shehui", "guonei", "guoji", "yule", "tiyu", "junshi", "keji", "caijing", "shishang"
     };
-
-    public final static String videoUrl = "http://c.3g.163.com/nc/video/home/1-10.html";
-    public final static String weather = "http://cdn.weather.hao.360.cn/sed_api_weather_info.php?app=appGuide&code=";
     private static int position = 0;
 
     public static String getRequestUrl(String type) {
@@ -35,8 +32,28 @@ public class Contracts {
         return index + newsType + types[position] + key;
     }
 
+    /**
+     * 视频
+     */
+    public final static String videoUrl = "http://c.3g.163.com/nc/video/home/1-10.html";
+
+
+    /**
+     * 天气
+     */
+    //    public final static String weather = "http://weather.mail.163.com/weather/xhr/weather/info.do?sid=&uid=&host=&ver=js6&fontface=yahei&style=1&skin=seablue&color=&city=";
+    private final static String weather = "https://free-api.heweather.com/v5/weather?key=13fd963a21324babbe0c861a4d39610f&city=";
 
     public static String getWeatherUrl(String cityCode) {
         return weather + cityCode;
     }
+
+    /**
+     * 图片背景
+     */
+    public final static String bingBg = "http://guolin.tech/api/bing_pic";
+    /**
+     * 获取省份
+     */
+    public final static String province = "http://guolin.tech/api/china/";
 }

@@ -16,6 +16,9 @@ public class MyMessageEvent<T> {
     public static final int MSG_FROM_LOAD_VIDEO_LIST_SUCCESS = 5;//加载视频列表成功
     public static final int MSG_FROM_LOAD_WEATHER_SUCCESS = 6;//加载天气
     public static final int MSG_FROM_LOAD_WEATHER_FAILED = 7;
+    public static final int MSG_FROM_LOAD_WEATHER_BG_SUCCESS = 8; //天气背景
+    public static final int MSG_FROM_LOAD_WEATHER_AREA_SUCCESS = 9;//位置
+    public static final int MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS = 10;
     private int fromMsg;//消息来源
     private T t;//数据
 

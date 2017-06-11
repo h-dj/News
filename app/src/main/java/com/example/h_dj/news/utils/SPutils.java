@@ -119,7 +119,25 @@ public class SPutils {
         return sp.getStringSet(key, defValue);
     }
 
+    /**
+     * 判断是否存在
+     *
+     * @param key
+     * @return
+     */
     public boolean isExist(String key) {
         return sp.contains(key);
     }
+
+    /**
+     * 移除
+     *
+     * @param key
+     */
+    public SPutils remove(String key) {
+        editor.remove(key);
+        return this;
+
+    }
+
 }

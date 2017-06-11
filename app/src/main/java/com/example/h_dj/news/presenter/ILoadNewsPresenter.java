@@ -10,4 +10,12 @@ public interface ILoadNewsPresenter {
     void loadVideoNewsList();
 
     void loadWeatherInfo(String cityCode);
+
+    void loadBg();
+
+    void loadProvince();
+
+    void loadCity(String url);
+
+    void loadCounty(String url);
 }

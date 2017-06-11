@@ -1,23 +1,43 @@
 package com.example.h_dj.news.fragment;
 
 
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.activity.ChooseAreaActivity;
+import com.example.h_dj.news.bean.AreaInfo;
+import com.example.h_dj.news.bean.Temperature;
 import com.example.h_dj.news.bean.WeatherInfos;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
+import com.example.h_dj.news.utils.LogUtil;
+import com.example.h_dj.news.utils.SPutils;
+import com.example.h_dj.news.widget.WeatherView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.OnClick;
+
+import static com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl.WEATHER_BG;
+import static com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl.WEATHER_INFO;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -25,45 +45,37 @@ import butterknife.OnClick;
 
 public class WeatherFragment extends BaseFragment {
 
-    @BindView(R.id.local)
-    ImageView mLocal;
-    @BindView(R.id.share)
-    ImageView mShare;
-    @BindView(R.id.weatherIcon)
-    ImageView mWeatherIcon;
-    @BindView(R.id.temperature)
-    TextView mTemperature;
-    @BindView(R.id.weatherInfo)
-    TextView mWeatherInfo;
-    @BindView(R.id.pm)
-    TextView m5;
-    @BindView(R.id.weatherIcon1)
-    ImageView mWeatherIcon1;
-    @BindView(R.id.week1)
-    TextView mWeek1;
-    @BindView(R.id.temperature1)
-    TextView mTemperature1;
-    @BindView(R.id.weatherInfo1)
-    TextView mWeatherInfo1;
-    @BindView(R.id.weatherIcon2)
-    ImageView mWeatherIcon2;
-    @BindView(R.id.week2)
-    TextView mWeek2;
-    @BindView(R.id.temperature2)
-    TextView mTemperature2;
-    @BindView(R.id.weatherInfo2)
-    TextView mWeatherInfo2;
-    @BindView(R.id.weatherIcon3)
-    ImageView mWeatherIcon3;
-    @BindView(R.id.week3)
-    TextView mWeek3;
-    @BindView(R.id.temperature3)
-    TextView mTemperature3;
-    @BindView(R.id.weatherInfo3)
-    TextView mWeatherInfo3;
+
+    @BindView(R.id.cityName)
+    TextView mCityName;
+    @BindView(R.id.title_update_time)
+    TextView mTitleUpdateTime;
+    @BindView(R.id.new_temperature)
+    TextView mNewTemperature;
+    @BindView(R.id.weather_info_text)
+    TextView mWeatherInfoText;
+    @BindView(R.id.forecast_layout)
+    LinearLayout mForecastLayout;
+    @BindView(R.id.aqi_text)
+    TextView mAqiText;
+    @BindView(R.id.pm2_5)
+    TextView mPm25;
+    @BindView(R.id.comfort_text)
+    TextView mComfortText;
+    @BindView(R.id.car_wash_text)
+    TextView mCarWashText;
+    @BindView(R.id.sport_text)
+    TextView mSportText;
+    @BindView(R.id.bg)
+    ImageView mBg;
+    @BindView(R.id.refresh)
+    ImageView mRefresh;
+    @BindView(R.id.wv)
+    WeatherView mWv;
 
 
     private ILoadNewsPresenter mPresenter;
+    private String city;
 
     @Override
     protected int getlayoutId() {
@@ -73,16 +85,22 @@ public class WeatherFragment extends BaseFragment {
     @Override
     protected void init() {
         super.init();
+        LogUtil.e("init" + city);
         EventBus.getDefault().register(this);
         mPresenter = new LoadNewsPresenterImpl(mContext);
-        mPresenter.loadWeatherInfo("101280103");
+        mPresenter.loadWeatherInfo(city);
+        mPresenter.loadBg();
     }
 
 
     @Override
     public void onDestroyView() {
         EventBus.getDefault().unregister(this);
+        if (mPresenter != null) {
+            mPresenter = null;
+        }
         super.onDestroyView();
+
     }
 
 
@@ -91,86 +109,131 @@ public class WeatherFragment extends BaseFragment {
         int fromMsg = event.getFromMsg();
         switch (fromMsg) {
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_SUCCESS:
-                //设置天气信息
-                WeatherInfos weatherInfos = (WeatherInfos) event.getT();
-                setWeatherInfo(weatherInfos);
+                WeatherInfos.HeWeather5Bean heWeather5Bean = (WeatherInfos.HeWeather5Bean) event.getT();
+                setWeatherInfo(heWeather5Bean);
+                stopAnimation();
                 break;
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_FAILED:
                 Toast.makeText(mContext, "获取失败", Toast.LENGTH_SHORT).show();
+                stopAnimation();
+                break;
+            case MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS:
+                Glide.with(mContext)
+                        .load(event.getT())
+                        .asBitmap()
+                        .centerCrop()
+                        .into(mBg);
+                break;
+            case MyMessageEvent.MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS:
+                AreaInfo info = (AreaInfo) event.getT();
+                city = info.getName();
+                LogUtil.e("::" + city);
+                update();
                 break;
         }
     }
 
     /**
-     * 设置天气信息
+     * 设置天气
      *
-     * @param weatherInfos
+     * @param heWeather5Bean
      */
-    private void setWeatherInfo(WeatherInfos weatherInfos) {
-        WeatherInfos.RealtimeBean realtime = weatherInfos.getRealtime();
-        String date = realtime.getDate();
-        String week = getWeek(realtime.getWeek());
-        String weather = realtime.getWeather().getInfo();
-        String wind = realtime.getWind().getDirect() + " " + realtime.getWind().getPower();
-        String temperature = realtime.getWeather().getTemperature();
-        mTemperature.setText(temperature);
-        mWeatherInfo.setText(String.format("%s  %s \n %s  %s", date, week, weather, wind));
-        weatherInfos.getWeather();
+    private void setWeatherInfo(WeatherInfos.HeWeather5Bean heWeather5Bean) {
+        //设置city
+        mCityName.setText(heWeather5Bean.getBasic().getCity());
+        //设置更新时间
+        String time = heWeather5Bean.getBasic().getUpdate().getLoc().split("\\s+")[1];
+        mTitleUpdateTime.setText(time + "");
+        //设置温度
+        String temperature = heWeather5Bean.getNow().getTmp();
+        String weatherInfo = heWeather5Bean.getNow().getCond().getTxt();
+        mNewTemperature.setText(String.format("%s ℃", temperature));
+        mWeatherInfoText.setText(weatherInfo);
 
-        mWeek1.setText(getWeek(realtime.getWeek() + 1));
-        mWeek2.setText(getWeek(realtime.getWeek() + 2));
-        mWeek3.setText(getWeek(realtime.getWeek() + 3));
-        WeatherInfos.WeatherBeanX weatherBeanX1 = weatherInfos.getWeather().get(1);
-        WeatherInfos.WeatherBeanX weatherBeanX2 = weatherInfos.getWeather().get(2);
-        WeatherInfos.WeatherBeanX weatherBeanX3 = weatherInfos.getWeather().get(3);
+        //设置天气预告
+        List<WeatherInfos.HeWeather5Bean.DailyForecastBean> daily_forecast = heWeather5Bean.getDaily_forecast();
+        List<Temperature> temperatures = new ArrayList<>();
+        mForecastLayout.removeAllViews();
+        for (WeatherInfos.HeWeather5Bean.DailyForecastBean forecastBean : daily_forecast) {
+            View view = LayoutInflater.from(mContext).inflate(R.layout.forcast_item, mForecastLayout, false);
+            TextView dateText = (TextView) view.findViewById(R.id.date_text);
+            TextView infoText = (TextView) view.findViewById(R.id.info_text);
+            TextView maxText = (TextView) view.findViewById(R.id.max_text);
+            TextView minText = (TextView) view.findViewById(R.id.min_text);
+            dateText.setTextColor(Color.WHITE);
+            infoText.setTextColor(Color.WHITE);
+            maxText.setTextColor(Color.WHITE);
+            minText.setTextColor(Color.WHITE);
 
-        mTemperature1.setText(weatherBeanX1.getInfo().getDay().get(2));
-        mTemperature2.setText(weatherBeanX2.getInfo().getDay().get(2));
-        mTemperature3.setText(weatherBeanX3.getInfo().getDay().get(2));
-
-        String s1 = weatherBeanX1.getInfo().getDay().get(1);
-        String s4 = weatherBeanX1.getInfo().getDay().get(4);
-        mWeatherInfo1.setText(String.format("%s %s", s1, s4));
-
-        s1 = weatherBeanX2.getInfo().getDay().get(1);
-        s4 = weatherBeanX2.getInfo().getDay().get(4);
-        mWeatherInfo2.setText(String.format("%s %s", s1, s4));
-
-        s1 = weatherBeanX3.getInfo().getDay().get(1);
-        s4 = weatherBeanX3.getInfo().getDay().get(4);
-        mWeatherInfo3.setText(String.format("%s %s", s1, s4));
-
-    }
-
-
-    private String getWeek(int week) {
-        week = week % 7;
-        switch (week) {
-            case 0:
-                return "星期一";
-            case 1:
-                return "星期二";
-            case 2:
-                return "星期三";
-            case 3:
-                return "星期四";
-            case 4:
-                return "星期五";
-            case 5:
-                return "星期六";
-            case 6:
-                return "星期日";
+            dateText.setText(forecastBean.getDate());
+            infoText.setText(String.format("%s/%s", forecastBean.getCond().getTxt_d(), forecastBean.getCond().getTxt_n()));
+            String max = forecastBean.getTmp().getMax();
+            String min = forecastBean.getTmp().getMin();
+            maxText.setText(String.format("%s ℃", max));
+            minText.setText(String.format("%s ℃", min));
+            mForecastLayout.addView(view);
+            Temperature temperature1 = new Temperature(Integer.parseInt(max), Integer.parseInt(min));
+            temperatures.add(temperature1);
         }
-        return "";
+        //设置温度曲线
+        mWv.initTemperature(temperatures)
+                .initPoint()
+                .invalidate();
+
+        //设置空气质量指数
+        WeatherInfos.HeWeather5Bean.AqiBean aqi = heWeather5Bean.getAqi();
+        if (aqi != null) {
+            mAqiText.setText(aqi.getCity().getAqi());
+            mPm25.setText(aqi.getCity().getPm25());
+        }
+
+        //设置生活建议
+        WeatherInfos.HeWeather5Bean.SuggestionBean suggestion = heWeather5Bean.getSuggestion();
+        mCarWashText.setText(String.format("舒适度：%s", suggestion.getCw().getTxt()));
+        mComfortText.setText(String.format("洗车指数：%s", suggestion.getComf().getTxt()));
+        mSportText.setText(String.format("运动指数：%s", suggestion.getSport().getTxt()));
     }
 
-    @OnClick({R.id.local, R.id.share})
+
+    @OnClick({R.id.refresh, R.id.cityName})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.local:
+            case R.id.refresh:
+                startRefreshAnimation();
+                update();
                 break;
-            case R.id.share:
+            case R.id.cityName:
+                Bundle bundle = new Bundle();
+                bundle.putString("currentCity", mCityName.getText().toString());
+                goTo(ChooseAreaActivity.class, bundle);
                 break;
         }
     }
+
+    private void update() {
+        SPutils.newInstance(mContext)
+                .build(WEATHER_INFO, Context.MODE_PRIVATE)
+                .remove(WEATHER_INFO)
+                .remove(WEATHER_BG)
+                .commit();
+        mPresenter.loadWeatherInfo(city);
+        mPresenter.loadBg();
+    }
+
+    /**
+     * 设置天气刷新时的刷新按钮动画
+     */
+    private void startRefreshAnimation() {
+        Animation animation = AnimationUtils.loadAnimation(mContext, R.anim.refresh_rotate);
+        mRefresh.startAnimation(animation);
+    }
+
+    /**
+     * 停止动画
+     */
+    private void stopAnimation() {
+        mRefresh.clearAnimation();
+    }
+
+
 }

@@ -7,13 +7,14 @@ import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.bean.AreaInfo;
 import com.example.h_dj.news.bean.NewsBean;
 import com.example.h_dj.news.bean.VideoNewsBean;
 import com.example.h_dj.news.bean.WeatherInfos;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.utils.GsonUtils;
 import com.example.h_dj.news.utils.LogUtil;
-import com.example.h_dj.news.utils.UnicodeUtils;
+import com.example.h_dj.news.utils.SPutils;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -29,8 +30,18 @@ import okhttp3.Call;
 
 public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
+
     private INewsFragment mINewsFragment;
     private Context mContext;
+    /**
+     * 保存json数据key
+     */
+    public final static String WEATHER_CITY = "city_json";
+    public final static String WEATHER_INFO = "weatherJson";
+    public final static String WEATHER_BG = "weatherBg";
+    private static final String WEATHER_PROVINCE = "province_json";
+    private static final String WEATHER_CONUTY = "county_json";
+    private static final String WEATHER_AREA = "area";
 
     public LoadNewsPresenterImpl(Context mContext, INewsFragment mINewsFragment) {
         this.mINewsFragment = mINewsFragment;
@@ -75,8 +86,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     public void loadVideoNewsList() {
         OkHttpUtils.get()
                 .url(Contracts.videoUrl)
-                .addHeader("Host", "c.3g.163.com")
-                .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
                 .build()
                 .execute(new StringCallback() {
                     @Override
@@ -101,32 +110,178 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     }
 
     @Override
-    public void loadWeatherInfo(String cityCode) {
-        OkHttpUtils.get()
-                .url(Contracts.getWeatherUrl(cityCode))
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_WEATHER_FAILED));
-                    }
+    public void loadWeatherInfo(String city) {
+        SPutils sPutils = SPutils.newInstance(mContext)
+                .build(WEATHER_INFO, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(WEATHER_INFO);
+        LogUtil.e("天气、链接：" + exist);
+        if (exist) {
+            decodeWeatherResponse(sPutils.getString(WEATHER_INFO, null));
+        } else {
+            OkHttpUtils.get()
+                    .url(Contracts.getWeatherUrl(city))
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+                            EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_WEATHER_FAILED));
+                        }
 
-                    @Override
-                    public void onResponse(String response, int id) {
-                        WeatherInfos weatherInfos = null;
-                        try {
-                            String result = response.substring(response.indexOf("{"), response.lastIndexOf(")"));
-                            result = UnicodeUtils.decode(result.toCharArray());
-                            result=result.replaceAll("\"info\":\"\"", "\"info\":null");
-                            LogUtil.e(result);
-                            weatherInfos = GsonUtils.String2WeatherBean(result);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        @Override
+                        public void onResponse(String response, int id) {
+                            SPutils.newInstance(mContext)
+                                    .build(WEATHER_INFO, Context.MODE_PRIVATE)
+                                    .putString(WEATHER_INFO, response)
+                                    .commit();
+                            decodeWeatherResponse(response);
                         }
-                        if (weatherInfos != null) {
-                            EventBus.getDefault().post(new MyMessageEvent<>(weatherInfos, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SUCCESS));
+                    });
+        }
+    }
+
+    @Override
+    public void loadBg() {
+        SPutils sPutils = SPutils.newInstance(mContext)
+                .build(WEATHER_INFO, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(WEATHER_BG);
+        LogUtil.e("图片链接：" + exist);
+        if (exist) {
+            EventBus.getDefault().post(new MyMessageEvent<>(sPutils.getString(WEATHER_BG, null), MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS));
+        } else {
+            OkHttpUtils.get()
+                    .url(Contracts.bingBg)
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
                         }
-                    }
-                });
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            SPutils.newInstance(mContext)
+                                    .build(WEATHER_INFO, Context.MODE_PRIVATE)
+                                    .putString(WEATHER_BG, response)
+                                    .commit();
+                            EventBus.getDefault().post(new MyMessageEvent<>(response, MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS));
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void loadProvince() {
+        final SPutils sPutils = SPutils.newInstance(mContext)
+                .build(WEATHER_AREA, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(WEATHER_PROVINCE);
+        LogUtil.e("省：" + exist);
+        if (exist) {
+            decodeWeatherAreaResponse(sPutils.getString(WEATHER_PROVINCE, null));
+        } else {
+            OkHttpUtils.get()
+                    .url(Contracts.province)
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            sPutils.putString(WEATHER_PROVINCE, response).commit();
+                            decodeWeatherAreaResponse(response);
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void loadCity(String url) {
+        final SPutils sPutils = SPutils.newInstance(mContext)
+                .build(WEATHER_AREA, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(WEATHER_CITY);
+        LogUtil.e("市：" + exist);
+        if (exist) {
+            decodeWeatherAreaResponse(sPutils.getString(WEATHER_CITY, null));
+        } else {
+            OkHttpUtils.get()
+                    .url(url)
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            sPutils.putString(WEATHER_CITY, response).commit();
+                            decodeWeatherAreaResponse(response);
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void loadCounty(String url) {
+        final SPutils sPutils = SPutils.newInstance(mContext)
+                .build(WEATHER_AREA, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(WEATHER_CONUTY);
+        LogUtil.e("县：" + exist);
+        if (exist) {
+            decodeWeatherAreaResponse(sPutils.getString(WEATHER_CONUTY, null));
+        } else {
+            OkHttpUtils.get()
+                    .url(url)
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+
+                        }
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            sPutils.putString(WEATHER_CONUTY, response).commit();
+                            decodeWeatherAreaResponse(response);
+                        }
+                    });
+        }
+    }
+
+    /**
+     * 解析位置json
+     *
+     * @param response
+     */
+    private void decodeWeatherAreaResponse(String response) {
+        if (response != null) {
+            LogUtil.e(response);
+            List<AreaInfo> areaInfos = GsonUtils.String2AreaInfo(response);
+            if (areaInfos.size() > 0) {
+                EventBus.getDefault().post(new MyMessageEvent<>(areaInfos, MyMessageEvent.MSG_FROM_LOAD_WEATHER_AREA_SUCCESS));
+            }
+        }
+    }
+
+
+    /**
+     * 解析天气响应
+     *
+     * @param response
+     */
+
+    private void decodeWeatherResponse(String response) {
+        if (response != null) {
+            LogUtil.e(response);
+            WeatherInfos info = GsonUtils.String2WeatherBean(response);
+            WeatherInfos.HeWeather5Bean heWeather5Bean = info.getHeWeather5().get(0);
+            if (heWeather5Bean != null) {
+                if ("ok".equals(heWeather5Bean.getStatus())) {
+                    EventBus.getDefault().post(new MyMessageEvent<>(heWeather5Bean, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SUCCESS));
+                }
+            }
+        }
     }
 }
