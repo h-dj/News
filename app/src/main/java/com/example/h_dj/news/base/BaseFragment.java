@@ -13,12 +13,15 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.h_dj.news.App;
 import com.example.h_dj.news.utils.LogUtil;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+
+import static cn.bmob.v3.Bmob.getApplicationContext;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -29,6 +32,7 @@ public abstract class BaseFragment extends Fragment {
     private Unbinder unbinder;
     protected Context mContext;
     protected App mApp;
+    private Toast mToast;
 
     @Nullable
     @Override
@@ -77,4 +81,16 @@ public abstract class BaseFragment extends Fragment {
         mContext = context;
     }
 
+    /**
+     * 显示Toast
+     *
+     * @param msg
+     */
+    public void showToast(String msg) {
+        if (mToast == null) {
+            mToast = Toast.makeText(getApplicationContext(), "" + msg, Toast.LENGTH_SHORT);
+        }
+        mToast.setText(msg);
+        mToast.show();
+    }
 }

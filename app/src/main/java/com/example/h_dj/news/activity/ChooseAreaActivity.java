@@ -64,7 +64,7 @@ public class ChooseAreaActivity extends BaseActivity {
 
         initRecyclerView();
 
-        mPresenter = new LoadNewsPresenterImpl(this, null);
+        mPresenter = new LoadNewsPresenterImpl(this);
         mPresenter.loadProvince();//下载
     }
 

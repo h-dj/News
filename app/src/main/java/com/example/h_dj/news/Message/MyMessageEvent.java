@@ -19,6 +19,8 @@ public class MyMessageEvent<T> {
     public static final int MSG_FROM_LOAD_WEATHER_BG_SUCCESS = 8; //天气背景
     public static final int MSG_FROM_LOAD_WEATHER_AREA_SUCCESS = 9;//位置
     public static final int MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS = 10;
+    public static final int MSG_FROM_NEWSFRAGMENT_ERROR = 11;//加载新闻列表错误
+    public static final int MSG_FROM_NEWSFRAGMENT_SUCCESS = 12;//加载新闻列表成功
     private int fromMsg;//消息来源
     private T t;//数据
 

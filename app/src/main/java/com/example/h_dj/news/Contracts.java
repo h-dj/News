@@ -35,7 +35,7 @@ public class Contracts {
     /**
      * 视频
      */
-    public final static String videoUrl = "http://c.3g.163.com/nc/video/home/1-10.html";
+    public final static String videoUrl = "http://c.3g.163.com/nc/video/home/10-10.html";
 
 
     /**

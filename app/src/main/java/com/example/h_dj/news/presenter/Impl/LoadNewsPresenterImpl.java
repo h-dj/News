@@ -4,7 +4,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.example.h_dj.news.Contracts;
-import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.bean.AreaInfo;
@@ -31,7 +30,6 @@ import okhttp3.Call;
 public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
 
-    private INewsFragment mINewsFragment;
     private Context mContext;
     /**
      * 保存json数据key
@@ -43,10 +41,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     private static final String WEATHER_CONUTY = "county_json";
     private static final String WEATHER_AREA = "area";
 
-    public LoadNewsPresenterImpl(Context mContext, INewsFragment mINewsFragment) {
-        this.mINewsFragment = mINewsFragment;
-        this.mContext = mContext;
-    }
 
     public LoadNewsPresenterImpl(Context context) {
         this.mContext = context;
@@ -57,7 +51,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
         String url = Contracts.getRequestUrl(value);
         LogUtil.e(url);
         if (TextUtils.isEmpty(url)) {
-            mINewsFragment.failed(mContext.getString(R.string.error_url));
+            EventBus.getDefault().post(new MyMessageEvent<>(mContext.getString(R.string.error_url), MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR));
         } else {
             OkHttpUtils.get()
                     .url(url)
@@ -65,7 +59,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                     .execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
-                            mINewsFragment.failed(mContext.getString(R.string.error_network));
+                            EventBus.getDefault().post(new MyMessageEvent<>(mContext.getString(R.string.error_network), MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR));
                         }
 
                         @Override
@@ -74,7 +68,8 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                             if (newsBean.getError_code() == 0) {
                                 LogUtil.e("成功");
                                 List<NewsBean.ResultBean.DataBean> data = newsBean.getResult().getData();
-                                mINewsFragment.success(data);
+                                EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT_SUCCESS));
+
                             }
                         }
                     });
@@ -84,29 +79,45 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     @Override
     public void loadVideoNewsList() {
-        OkHttpUtils.get()
-                .url(Contracts.videoUrl)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                        EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        VideoNewsBean videoNewsBean = GsonUtils.String2VideoNewsBean(response);
-                        if (videoNewsBean != null) {
-                            List<VideoNewsBean.VideoListBean> videoList = videoNewsBean.getVideoList();
-                            if (videoList != null && videoList.size() > 0) {
-                                EventBus.getDefault().post(new MyMessageEvent<>(videoList, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS));
-                            } else {
-                                EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
-                            }
-
+        SPutils sPutils = SPutils.newInstance(mContext).build("VideoInfo", Context.MODE_PRIVATE);
+        if (sPutils.isExist("VideoInfo")) {
+            String response = sPutils.getString("VideoInfo", null);
+            convertToVideoNewsBean(response);
+        } else {
+            OkHttpUtils.get()
+                    .url(Contracts.videoUrl)
+                    .addHeader("Host", "c.3g.163.com")
+                    .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+                    .build()
+                    .execute(new StringCallback() {
+                        @Override
+                        public void onError(Call call, Exception e, int id) {
+                            e.printStackTrace();
+                            EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
                         }
-                    }
-                });
+
+                        @Override
+                        public void onResponse(String response, int id) {
+                            convertToVideoNewsBean(response);
+                        }
+                    });
+        }
+    }
+
+    private void convertToVideoNewsBean(String response) {
+        VideoNewsBean videoNewsBean = GsonUtils.String2VideoNewsBean(response);
+        if (videoNewsBean != null) {
+            List<VideoNewsBean.VideoListBean> videoList = videoNewsBean.getVideoList();
+            if (videoList != null && videoList.size() > 0) {
+                EventBus.getDefault().post(new MyMessageEvent<>(videoList, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS));
+                SPutils.newInstance(mContext).build("VideoInfo", Context.MODE_PRIVATE)
+                        .putString("VideoInfo", response)
+                        .commit();
+            } else {
+                EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
+            }
+
+        }
     }
 
     @Override
@@ -198,39 +209,40 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     @Override
     public void loadCity(String url) {
-            OkHttpUtils.get()
-                    .url(url)
-                    .build()
-                    .execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onResponse(String response, int id) {
-                            decodeWeatherAreaResponse(response);
-                        }
-                    });
+                    @Override
+                    public void onResponse(String response, int id) {
+                        decodeWeatherAreaResponse(response);
+                    }
+                });
     }
 
     @Override
     public void loadCounty(String url) {
-            OkHttpUtils.get()
-                    .url(url)
-                    .build()
-                    .execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
 
-                        }
+                    }
 
-                        @Override
-                        public void onResponse(String response, int id) {
-                            decodeWeatherAreaResponse(response);
-                        }
-                    });
+                    @Override
+                    public void onResponse(String response, int id) {
+                        decodeWeatherAreaResponse(response);
+                    }
+                });
     }
+
 
     /**
      * 解析位置json

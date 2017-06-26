@@ -1,13 +1,15 @@
 package com.example.h_dj.news.adapter;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.VideoNewsBean;
-import com.tencent.smtt.sdk.WebView;
+import com.tencent.smtt.sdk.TbsVideo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,43 +17,25 @@ import java.util.List;
  */
 public class VideoAdapter extends BaseRecycleViewAdapter {
 
-    private List<WebView> mWebViews = new ArrayList<>();
-
     public VideoAdapter(Context context, int layoutId, List datas) {
         super(context, layoutId, datas);
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o,int position) {
-        VideoNewsBean.VideoListBean videoListBean = (VideoNewsBean.VideoListBean) o;
-        WebView view = holder.getView(R.id.web);
-        mWebViews.add(view);
-        view.loadData(getVideoSrcHtml(videoListBean.getMp4_url(), videoListBean.getCover()), "text/html", "utf-8");
-
-//        if (TbsVideo.canUseTbsPlayer(mContext)) {
-//            TbsVideo.openVideo(mContext, videoListBean.getMp4_url());
-//        }
+    protected void convert(MyViewHolder holder, Object o, int position) {
+        final VideoNewsBean.VideoListBean videoListBean = (VideoNewsBean.VideoListBean) o;
         holder.setText(R.id.title, videoListBean.getTitle());
-    }
-
-    public String getVideoSrcHtml(String src, String poster) {
-        return "<video style=\"width:100%; height: auto;\" controls  poster=" + poster + " preload=\"auto\">\n" +
-                "           <source src=" + src + " >\n" +
-                "        </video>";
-    }
-
-    /**
-     * 停止视频播放
-     */
-    public void destoryWebView(boolean isDestory) {
-        for (WebView webView : mWebViews) {
-            if (isDestory) {
-                webView.onPause();
-            } else {
-                webView.onResume();
+        ImageView imageView = holder.getView(R.id.videoView);
+        Glide.with(mContext).load(videoListBean.getCover()).into(imageView);
+        holder.getView(R.id.playIcon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(TbsVideo.canUseTbsPlayer(mContext)){
+                    TbsVideo.openVideo(mContext, videoListBean.getMp4_url());
+                }
             }
-        }
-
-
+        });
     }
+
+
 }

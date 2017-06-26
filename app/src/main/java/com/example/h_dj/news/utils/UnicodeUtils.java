@@ -122,7 +122,7 @@ public class UnicodeUtils {
                     }
                 }
             } else {
-                out[outLen++] = (char) c;
+                out[outLen++] = c;
             }
         }
         return new String(out, 0, outLen);

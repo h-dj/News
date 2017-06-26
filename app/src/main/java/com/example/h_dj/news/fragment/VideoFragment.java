@@ -1,7 +1,7 @@
 package com.example.h_dj.news.fragment;
 
-import android.graphics.PixelFormat;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +19,7 @@ import com.example.h_dj.news.bean.VideoNewsBean;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
 import com.example.h_dj.news.utils.LogUtil;
+import com.example.h_dj.news.utils.SPutils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -28,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.OnClick;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -42,6 +42,9 @@ public class VideoFragment extends BaseFragment {
     RecyclerView mRecyclerView;
     @BindView(R.id.refresh)
     TextView mRefresh;
+    @BindView(R.id.swipeRefresh)
+    SwipeRefreshLayout mSwipeRefresh;
+
 
     private VideoAdapter mVideoAdapter;
     private List<VideoNewsBean.VideoListBean> videoList;
@@ -53,17 +56,10 @@ public class VideoFragment extends BaseFragment {
         return R.layout.fragment_video;
     }
 
-    @Override
-    public void onHiddenChanged(boolean hidden) {
-        // TODO: 2017/5/29  还没解决 fragment 隐藏webView视频还在播放？？
-        mVideoAdapter.destoryWebView(hidden);
-    }
 
     @Override
     protected void init() {
         super.init();
-        //这个对宿主没什么影响，建议声明
-        ((AppCompatActivity) mContext).getWindow().setFormat(PixelFormat.TRANSLUCENT);
         EventBus.getDefault().register(this);
         initToolbar(mToolbar, "视频");
         videoList = new ArrayList<>();
@@ -71,6 +67,23 @@ public class VideoFragment extends BaseFragment {
         initRecyclerView();
         mPresenter = new LoadNewsPresenterImpl(mContext);
         mPresenter.loadVideoNewsList();
+        initSwipeRefresh();
+    }
+
+    private void initSwipeRefresh() {
+        mSwipeRefresh.setColorSchemeColors(getResources().getColor(R.color.colorPrimary),
+                getResources().getColor(R.color.primary_light),
+                getResources().getColor(R.color.icons));
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefresh.setRefreshing(true);
+                SPutils.newInstance(mContext).build("VideoInfo", Context.MODE_PRIVATE)
+                        .remove("VideoInfo")
+                        .commit();
+                mPresenter.loadVideoNewsList();
+            }
+        });
     }
 
     /**
@@ -86,10 +99,13 @@ public class VideoFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MyMessageEvent event) {
+        mRefresh.setVisibility(View.GONE);
         switch (event.getFromMsg()) {
             case MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR:
                 LogUtil.e("失败");
                 mRefresh.setVisibility(View.VISIBLE);
+                videoList.clear();
+                mVideoAdapter.notifyDataSetChanged();
                 Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 break;
             case MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS:
@@ -101,6 +117,7 @@ public class VideoFragment extends BaseFragment {
                 mVideoAdapter.notifyDataSetChanged();
                 break;
         }
+        mSwipeRefresh.setRefreshing(false);
     }
 
 
@@ -111,12 +128,7 @@ public class VideoFragment extends BaseFragment {
             mPresenter = null;
         }
         super.onDestroyView();
-
     }
 
 
-    @OnClick(R.id.refresh)
-    public void onViewClicked() {
-        mPresenter.loadVideoNewsList();
-    }
 }

@@ -18,13 +18,12 @@ import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.example.h_dj.news.Contracts;
-import com.example.h_dj.news.Inteface.INewsFragment;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
-import com.example.h_dj.news.base.BaseFragment;
-import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyPagerAdapter;
 import com.example.h_dj.news.adapter.MyTabSelectAdapter;
+import com.example.h_dj.news.base.BaseFragment;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.NewsBean;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
@@ -32,6 +31,8 @@ import com.example.h_dj.news.utils.LogUtil;
 import com.example.h_dj.news.utils.SPutils;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,7 @@ import butterknife.OnClick;
  * Created by H_DJ on 2017/5/16.
  */
 
-public class NewsFragment extends BaseFragment implements INewsFragment {
+public class NewsFragment extends BaseFragment {
 
     private static final String TABS = "TABS";
     private static final String TABS_SELECT = "TABS_SELECT";//已选择栏目
@@ -79,8 +80,9 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
     @Override
     protected void init() {
         super.init();
+        EventBus.getDefault().register(this);
         mSPutils = SPutils.newInstance(mContext).build(TABS, Context.MODE_PRIVATE);
-        mPresenter = new LoadNewsPresenterImpl(mContext, this);
+        mPresenter = new LoadNewsPresenterImpl(mContext);
         mTabs = new ArrayList<>();
         mCanSelectTabs = new ArrayList<>();
         initToolbar(mToolbar, getString(R.string.app_name));
@@ -162,7 +164,6 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
             }
         });
     }
-
 
 
     /**
@@ -250,17 +251,22 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         }
     }
 
-    @Override
-    public void failed(String s) {
-        LogUtil.e(s);
-    }
 
-    @Override
-    public void success(List<NewsBean.ResultBean.DataBean> data) {
-        LogUtil.e("数据类型：" + newsType + ":" + data.size());
-        EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MyMessageEvent event) {
+        int fromMsg = event.getFromMsg();
+        switch (fromMsg) {
+            case MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR:
+                String msg = (String) event.getT();
+                showToast(msg);
+                break;
+            case MyMessageEvent.MSG_FROM_NEWSFRAGMENT_SUCCESS:
+                List<NewsBean.ResultBean.DataBean> data = (List<NewsBean.ResultBean.DataBean>) event.getT();
+                LogUtil.e("数据类型：" + newsType + ":" + data.size());
+                EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
+                break;
+        }
     }
-
 
     @OnClick(R.id.tabs_switcher)
     public void onViewClicked() {
@@ -280,6 +286,8 @@ public class NewsFragment extends BaseFragment implements INewsFragment {
         set.addAll(mCanSelectTabs);
         mSPutils.putStringSet(TABS_CAN_SELECT, set)
                 .commit();
+        mPresenter = null;
+        EventBus.getDefault().unregister(this);
         super.onDestroyView();
     }
 

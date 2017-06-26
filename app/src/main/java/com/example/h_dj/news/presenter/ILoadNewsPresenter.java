@@ -18,4 +18,6 @@ public interface ILoadNewsPresenter {
     void loadCity(String url);
 
     void loadCounty(String url);
+
+
 }

@@ -56,11 +56,7 @@ public class App extends Application {
      */
     public boolean checkLogin() {
         mUser = BmobUser.getCurrentUser(User.class);
-        if (mUser != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return mUser != null;
     }
 
 

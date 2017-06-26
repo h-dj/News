@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import com.example.h_dj.news.App;
 
@@ -22,6 +23,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     private Unbinder unbinder;
     private ProgressDialog progressDialog;
     protected App mApp;
+    private Toast mToast;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -81,7 +84,18 @@ public abstract class BaseActivity extends AppCompatActivity {
         progressDialog.dismiss();
     }
 
-
+    /**
+     * 显示Toast
+     *
+     * @param msg
+     */
+    public void showToast(String msg) {
+        if (mToast == null) {
+            mToast = Toast.makeText(getApplicationContext(), "" + msg, Toast.LENGTH_SHORT);
+        }
+        mToast.setText(msg);
+        mToast.show();
+    }
 
     /**
      * 初始化toolbar

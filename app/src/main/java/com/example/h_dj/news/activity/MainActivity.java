@@ -1,10 +1,12 @@
 package com.example.h_dj.news.activity;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 
 import com.example.h_dj.news.R;
@@ -29,6 +31,8 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected int getLayoutId() {
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);//（这个对宿主没什么影响，建议声明）
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE | WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
         return R.layout.activity_main;
     }
 

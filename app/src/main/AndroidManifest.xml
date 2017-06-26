@@ -44,7 +44,7 @@
         <!--引导页-->
         <activity
             android:name=".activity.GuideActivity"
-            android:theme="@style/AppTheme"/>
+            android:theme="@style/splashTheme"/>
         <!--web页-->
         <activity android:name=".activity.WebActivity">
             <intent-filter>
