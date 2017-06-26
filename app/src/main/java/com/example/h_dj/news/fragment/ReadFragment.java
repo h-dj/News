@@ -1,6 +1,7 @@
 package com.example.h_dj.news.fragment;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseFragment;
 
 /**
  * Created by H_DJ on 2017/5/16.

@@ -17,6 +17,7 @@ import com.bumptech.glide.Glide;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.ChooseAreaActivity;
+import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.bean.AreaInfo;
 import com.example.h_dj.news.bean.Temperature;
 import com.example.h_dj.news.bean.WeatherInfos;

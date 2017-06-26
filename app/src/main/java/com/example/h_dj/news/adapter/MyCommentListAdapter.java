@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.CommentBean;
 import com.example.h_dj.news.bean.User;
 
@@ -25,7 +26,7 @@ public class MyCommentListAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o) {
+    protected void convert(MyViewHolder holder, Object o,int position) {
         CommentBean commentBean = (CommentBean) o;
         String userId = commentBean.getUserId();
         getUserInfo(userId, holder);

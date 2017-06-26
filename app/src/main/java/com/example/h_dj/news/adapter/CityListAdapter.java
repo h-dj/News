@@ -3,6 +3,7 @@ package com.example.h_dj.news.adapter;
 import android.content.Context;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.AreaInfo;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class CityListAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o) {
+    protected void convert(MyViewHolder holder, Object o,int position) {
         AreaInfo cityName = (AreaInfo) o;
         holder.setText(R.id.cityName, cityName.getName());
     }

@@ -3,6 +3,7 @@ package com.example.h_dj.news.adapter;
 import android.content.Context;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.VideoNewsBean;
 import com.tencent.smtt.sdk.WebView;
 
@@ -21,7 +22,7 @@ public class VideoAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o) {
+    protected void convert(MyViewHolder holder, Object o,int position) {
         VideoNewsBean.VideoListBean videoListBean = (VideoNewsBean.VideoListBean) o;
         WebView view = holder.getView(R.id.web);
         mWebViews.add(view);

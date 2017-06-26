@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseActivity;
 import com.example.h_dj.news.bean.CollectBean;
 import com.example.h_dj.news.bean.CommentBean;
 import com.example.h_dj.news.utils.LogUtil;

@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseActivity;
 import com.example.h_dj.news.bean.User;
 import com.example.h_dj.news.utils.LogUtil;
 

@@ -10,8 +10,8 @@ import android.view.View;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.WebActivity;
-import com.example.h_dj.news.adapter.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.MyRVAdapter;
+import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.bean.NewsBean;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,7 +48,15 @@ public class NewsContentFragment extends BaseFragment {
         EventBus.getDefault().register(this);
         mDataBeen = new ArrayList<>();
         mMyRVAdapter = new MyRVAdapter(mContext, R.layout.news_item, mDataBeen);
-        mMyRVAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
+        mMyRVAdapter.setItemListener(new MyRVAdapter.OnItemListener() {
+            @Override
+            public void onBannerListener(int position) {
+                Bundle bundle = new Bundle();
+                bundle.putString("url", mDataBeen.get(position).getUrl());
+                bundle.putString("title", mDataBeen.get(position).getTitle());
+                goTo(WebActivity.class, bundle);
+            }
+
             @Override
             public void onItemClick(View view, int position) {
                 Bundle bundle = new Bundle();
@@ -62,6 +70,7 @@ public class NewsContentFragment extends BaseFragment {
 
             }
         });
+
         initRecyclerView();
     }
 

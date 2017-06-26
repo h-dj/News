@@ -1,4 +1,4 @@
-package com.example.h_dj.news.fragment;
+package com.example.h_dj.news.base;
 
 
 import android.app.Activity;

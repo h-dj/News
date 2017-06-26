@@ -3,6 +3,7 @@ package com.example.h_dj.news.activity;
 import android.os.Handler;
 import android.os.Message;
 
+import com.example.h_dj.news.base.BaseActivity;
 import com.example.h_dj.news.utils.SPutils;
 
 /**

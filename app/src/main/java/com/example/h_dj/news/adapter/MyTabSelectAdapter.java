@@ -3,6 +3,7 @@ package com.example.h_dj.news.adapter;
 import android.content.Context;
 
 import com.example.h_dj.news.R;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class MyTabSelectAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o) {
+    protected void convert(MyViewHolder holder, Object o,int position) {
         holder.setText(R.id.tv_tab, (String) o);
     }
 }

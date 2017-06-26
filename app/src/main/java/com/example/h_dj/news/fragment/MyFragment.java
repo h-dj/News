@@ -8,6 +8,7 @@ import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.CollectionActivity;
 import com.example.h_dj.news.activity.LoginActivity;
+import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.bean.User;
 import com.example.h_dj.news.utils.LogUtil;
 

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.adapter.VideoAdapter;
+import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.bean.VideoNewsBean;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;

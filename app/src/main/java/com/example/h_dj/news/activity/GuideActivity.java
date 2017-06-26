@@ -8,6 +8,7 @@ import android.view.WindowManager;
 
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.adapter.GuidePagerAdapter;
+import com.example.h_dj.news.base.BaseActivity;
 
 import java.util.ArrayList;
 import java.util.List;

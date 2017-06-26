@@ -1,4 +1,4 @@
-package com.example.h_dj.news.adapter;
+package com.example.h_dj.news.base;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -39,7 +39,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        convert(holder, mList.get(position));
+        convert(holder, mList.get(position),position);
 
         //设置ItemView单击事件
         if (mOnItemClickListener != null) {
@@ -57,7 +57,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
                 }
             });
         }
-
     }
 
     /**
@@ -66,7 +65,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
      * @param holder
      * @param t
      */
-    protected abstract void convert(MyViewHolder holder, T t);  //绑定数据
+    protected abstract void convert(MyViewHolder holder, T t,int position);  //绑定数据
 
 
     @Override
@@ -75,7 +74,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
     }
 
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    protected static class MyViewHolder extends RecyclerView.ViewHolder {
         private SparseArray<View> mViewSparseArray; //用来保存View;以免多次findViewById
         protected View mConveryView;  //用来复用itemView
         private Context mContext;
@@ -141,7 +140,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
         }
     }
 
-    //// TODO: 2017/3/28
+
     //定义一个接口用来ItemView的点击事件
     public interface OnItemClickListener {
         void onItemClick(View view, int position);
