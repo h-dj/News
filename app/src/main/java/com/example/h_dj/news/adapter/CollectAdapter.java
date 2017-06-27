@@ -18,8 +18,8 @@ public class CollectAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o,int position) {
-        CollectBean bean = (CollectBean) o;
+    protected void convert(MyViewHolder holder,int position) {
+        CollectBean bean = (CollectBean) mList.get(position);
         holder.setText(R.id.title, bean.getCollectTitle());
         holder.setText(R.id.createAtTime, bean.getCreatedAt());
     }

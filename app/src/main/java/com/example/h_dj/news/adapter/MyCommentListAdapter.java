@@ -26,8 +26,8 @@ public class MyCommentListAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o,int position) {
-        CommentBean commentBean = (CommentBean) o;
+    protected void convert(MyViewHolder holder, int position) {
+        CommentBean commentBean = (CommentBean) mList.get(position);
         String userId = commentBean.getUserId();
         getUserInfo(userId, holder);
         holder.setText(R.id.comment, commentBean.getCommentContent());

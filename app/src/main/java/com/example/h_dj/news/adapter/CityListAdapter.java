@@ -19,8 +19,8 @@ public class CityListAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o,int position) {
-        AreaInfo cityName = (AreaInfo) o;
+    protected void convert(MyViewHolder holder, int position) {
+        AreaInfo cityName = (AreaInfo) mList.get(position);
         holder.setText(R.id.cityName, cityName.getName());
     }
 

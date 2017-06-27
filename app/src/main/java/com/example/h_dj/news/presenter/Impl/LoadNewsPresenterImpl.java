@@ -23,24 +23,13 @@ import java.util.List;
 
 import okhttp3.Call;
 
+
 /**
  * Created by H_DJ on 2017/5/17.
  */
 
 public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
-
-
     private Context mContext;
-    /**
-     * 保存json数据key
-     */
-    public final static String WEATHER_CITY = "city_json";
-    public final static String WEATHER_INFO = "weatherJson";
-    public final static String WEATHER_BG = "weatherBg";
-    private static final String WEATHER_PROVINCE = "province_json";
-    private static final String WEATHER_CONUTY = "county_json";
-    private static final String WEATHER_AREA = "area";
-
 
     public LoadNewsPresenterImpl(Context context) {
         this.mContext = context;
@@ -64,7 +53,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            NewsBean newsBean = GsonUtils.String2Obj(response);
+                            NewsBean newsBean = (NewsBean) GsonUtils.String2Obj(response, NewsBean.class);
                             if (newsBean.getError_code() == 0) {
                                 LogUtil.e("成功");
                                 List<NewsBean.ResultBean.DataBean> data = newsBean.getResult().getData();
@@ -79,9 +68,9 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     @Override
     public void loadVideoNewsList() {
-        SPutils sPutils = SPutils.newInstance(mContext).build("VideoInfo", Context.MODE_PRIVATE);
-        if (sPutils.isExist("VideoInfo")) {
-            String response = sPutils.getString("VideoInfo", null);
+        SPutils sPutils = SPutils.newInstance(mContext).build(Contracts.VIDEO_INFO, Context.MODE_PRIVATE);
+        if (sPutils.isExist(Contracts.VIDEO_INFO)) {
+            String response = sPutils.getString(Contracts.VIDEO_INFO, null);
             convertToVideoNewsBean(response);
         } else {
             OkHttpUtils.get()
@@ -105,13 +94,14 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     }
 
     private void convertToVideoNewsBean(String response) {
-        VideoNewsBean videoNewsBean = GsonUtils.String2VideoNewsBean(response);
+        VideoNewsBean videoNewsBean = (VideoNewsBean) GsonUtils.String2Obj(response, VideoNewsBean.class);
+        LogUtil.e(":::" + videoNewsBean.getVideoList().size());
         if (videoNewsBean != null) {
             List<VideoNewsBean.VideoListBean> videoList = videoNewsBean.getVideoList();
             if (videoList != null && videoList.size() > 0) {
                 EventBus.getDefault().post(new MyMessageEvent<>(videoList, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS));
-                SPutils.newInstance(mContext).build("VideoInfo", Context.MODE_PRIVATE)
-                        .putString("VideoInfo", response)
+                SPutils.newInstance(mContext).build(Contracts.VIDEO_INFO, Context.MODE_PRIVATE)
+                        .putString(Contracts.VIDEO_INFO, response)
                         .commit();
             } else {
                 EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR));
@@ -123,11 +113,11 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     @Override
     public void loadWeatherInfo(String city) {
         SPutils sPutils = SPutils.newInstance(mContext)
-                .build(WEATHER_INFO, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(WEATHER_INFO);
+                .build(Contracts.WEATHER_INFO, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(Contracts.WEATHER_INFO);
         LogUtil.e("天气、链接：" + exist);
         if (exist) {
-            decodeWeatherResponse(sPutils.getString(WEATHER_INFO, null));
+            decodeWeatherResponse(sPutils.getString(Contracts.WEATHER_INFO, null));
         } else {
             OkHttpUtils.get()
                     .url(Contracts.getWeatherUrl(city))
@@ -141,8 +131,8 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                         @Override
                         public void onResponse(String response, int id) {
                             SPutils.newInstance(mContext)
-                                    .build(WEATHER_INFO, Context.MODE_PRIVATE)
-                                    .putString(WEATHER_INFO, response)
+                                    .build(Contracts.WEATHER_INFO, Context.MODE_PRIVATE)
+                                    .putString(Contracts.WEATHER_INFO, response)
                                     .commit();
                             decodeWeatherResponse(response);
                         }
@@ -153,11 +143,11 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     @Override
     public void loadBg() {
         SPutils sPutils = SPutils.newInstance(mContext)
-                .build(WEATHER_INFO, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(WEATHER_BG);
+                .build(Contracts.WEATHER_INFO, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(Contracts.WEATHER_BG);
         LogUtil.e("图片链接：" + exist);
         if (exist) {
-            EventBus.getDefault().post(new MyMessageEvent<>(sPutils.getString(WEATHER_BG, null), MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS));
+            EventBus.getDefault().post(new MyMessageEvent<>(sPutils.getString(Contracts.WEATHER_BG, null), MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS));
         } else {
             OkHttpUtils.get()
                     .url(Contracts.bingBg)
@@ -165,14 +155,13 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                     .execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
-
                         }
 
                         @Override
                         public void onResponse(String response, int id) {
                             SPutils.newInstance(mContext)
-                                    .build(WEATHER_INFO, Context.MODE_PRIVATE)
-                                    .putString(WEATHER_BG, response)
+                                    .build(Contracts.WEATHER_INFO, Context.MODE_PRIVATE)
+                                    .putString(Contracts.WEATHER_BG, response)
                                     .commit();
                             EventBus.getDefault().post(new MyMessageEvent<>(response, MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS));
                         }
@@ -183,11 +172,11 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     @Override
     public void loadProvince() {
         final SPutils sPutils = SPutils.newInstance(mContext)
-                .build(WEATHER_AREA, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(WEATHER_PROVINCE);
+                .build(Contracts.WEATHER_AREA, Context.MODE_PRIVATE);
+        boolean exist = sPutils.isExist(Contracts.WEATHER_PROVINCE);
         LogUtil.e("省：" + exist);
         if (exist) {
-            decodeWeatherAreaResponse(sPutils.getString(WEATHER_PROVINCE, null));
+            decodeWeatherAreaResponse(sPutils.getString(Contracts.WEATHER_PROVINCE, null));
         } else {
             OkHttpUtils.get()
                     .url(Contracts.province)
@@ -200,7 +189,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
                         @Override
                         public void onResponse(String response, int id) {
-                            sPutils.putString(WEATHER_PROVINCE, response).commit();
+                            sPutils.putString(Contracts.WEATHER_PROVINCE, response).commit();
                             decodeWeatherAreaResponse(response);
                         }
                     });
@@ -215,7 +204,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-
                     }
 
                     @Override
@@ -233,7 +221,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                 .execute(new StringCallback() {
                     @Override
                     public void onError(Call call, Exception e, int id) {
-
                     }
 
                     @Override
@@ -242,7 +229,6 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                     }
                 });
     }
-
 
     /**
      * 解析位置json
@@ -269,7 +255,7 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     private void decodeWeatherResponse(String response) {
         if (response != null) {
             LogUtil.e(response);
-            WeatherInfos info = GsonUtils.String2WeatherBean(response);
+            WeatherInfos info = (WeatherInfos) GsonUtils.String2Obj(response, WeatherInfos.class);
             WeatherInfos.HeWeather5Bean heWeather5Bean = info.getHeWeather5().get(0);
             if (heWeather5Bean != null) {
                 if ("ok".equals(heWeather5Bean.getStatus())) {

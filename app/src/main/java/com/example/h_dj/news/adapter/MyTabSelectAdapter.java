@@ -18,7 +18,7 @@ public class MyTabSelectAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o,int position) {
-        holder.setText(R.id.tv_tab, (String) o);
+    protected void convert(MyViewHolder holder,int position) {
+        holder.setText(R.id.tv_tab, (String) mList.get(position));
     }
 }

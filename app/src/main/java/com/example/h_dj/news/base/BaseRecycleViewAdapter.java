@@ -39,7 +39,7 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        convert(holder, mList.get(position),position);
+        convert(holder,position);
 
         //设置ItemView单击事件
         if (mOnItemClickListener != null) {
@@ -63,9 +63,9 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
      * 交给调用者绑定数据
      *
      * @param holder
-     * @param t
+     *
      */
-    protected abstract void convert(MyViewHolder holder, T t,int position);  //绑定数据
+    protected abstract void convert(MyViewHolder holder,int position);  //绑定数据
 
 
     @Override
@@ -77,13 +77,11 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
     protected static class MyViewHolder extends RecyclerView.ViewHolder {
         private SparseArray<View> mViewSparseArray; //用来保存View;以免多次findViewById
         protected View mConveryView;  //用来复用itemView
-        private Context mContext;
         private final String TAG = "MyViewHolder";
 
         //初始化参数
         public MyViewHolder(Context context, View itemView) {
             super(itemView);
-            mContext = context;
             mViewSparseArray = new SparseArray<View>();
             mConveryView = itemView;
         }

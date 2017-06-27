@@ -28,35 +28,41 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
      */
     private static final int BANNER = 0;//bannerItem
 
-
     /**
      * 当前类型
      */
     private int currentType = BANNER;
     private Context mContext;
-    private List<String> images;
-    private OnItemListener onItemListener;
+    private List<NewsBean.ResultBean.DataBean> ItemBanners;
+    private List<NewsBean.ResultBean.DataBean> Itmes;
+    private List<String> images = new ArrayList<>();
+    private List<String> titles = new ArrayList<>();
 
-    public MyRVAdapter(Context context, int layoutId, List datas) {
+    public MyRVAdapter(Context context, int layoutId, List<NewsBean.ResultBean.DataBean> datas) {
         super(context, layoutId, datas);
         mContext = context;
-        images = new ArrayList<>();
-
+        ItemBanners = new ArrayList<>();
+        Itmes = new ArrayList<>();
     }
 
+
     @Override
-    protected void convert(MyViewHolder holder, Object o, int position) {
+    protected void convert(MyViewHolder holder, int position) {
         if (getItemViewType(position) == BANNER) {
+            final Banner mBanner = holder.getView(R.id.new_banner);
             images.clear();
+            titles.clear();
             for (int i = 0; i < 4; i++) {
-                images.add(((NewsBean.ResultBean.DataBean) mList.get(i)).getThumbnail_pic_s());
+                NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) mList.get(i);
+                images.add(dataBean.getThumbnail_pic_s());
+                titles.add(dataBean.getTitle());
             }
-            Banner mBanner = holder.getView(R.id.new_banner);
+            mBanner.setImages(images);
+            mBanner.setBannerTitles(titles);
             //设置banner样式
-            mBanner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
+            mBanner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE);
             //设置banner动画效果
             mBanner.setBannerAnimation(Transformer.Default);
-            mBanner.setImages(images);
             mBanner.setImageLoader(new ImageLoader() {
                 @Override
                 public void displayImage(Context context, Object path, ImageView imageView) {
@@ -66,15 +72,24 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
             mBanner.setOnBannerListener(new OnBannerListener() {
                 @Override
                 public void OnBannerClick(int position) {
-                    if (onItemListener != null) {
-                        onItemListener.onBannerListener(position);
+                    if (mOnItemClickListener != null) {
+                        mOnItemClickListener.onItemClick(mBanner, position);
                     }
                 }
             });
-            mBanner.setDelayTime(1500);
+            mBanner.setDelayTime(2500);
             mBanner.start();
         } else if (getItemViewType(position) > 0) {
-            NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) o;
+            NewsBean.ResultBean.DataBean dataBean = null;
+            switch (position) {
+                case 1:
+                case 2:
+                case 3:
+                    dataBean = (NewsBean.ResultBean.DataBean) mList.get(position + 3);
+                    break;
+                default:
+                    dataBean = (NewsBean.ResultBean.DataBean) mList.get(position);
+            }
             holder.setText(R.id.item_title, dataBean.getTitle());
             holder.setText(R.id.item_author_name, dataBean.getAuthor_name());
             holder.setText(R.id.item_date, dataBean.getDate());
@@ -106,6 +121,11 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
+    public int getItemCount() {
+        return super.getItemCount() - 3;
+    }
+
+    @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
             case BANNER:
@@ -115,11 +135,4 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
         }
     }
 
-    public interface OnItemListener extends OnItemClickListener {
-        void onBannerListener(int position);
-    }
-
-    public void setItemListener(OnItemListener onItemListener) {
-        this.onItemListener=onItemListener;
-    }
 }

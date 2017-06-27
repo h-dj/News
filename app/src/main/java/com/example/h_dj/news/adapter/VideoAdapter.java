@@ -22,15 +22,15 @@ public class VideoAdapter extends BaseRecycleViewAdapter {
     }
 
     @Override
-    protected void convert(MyViewHolder holder, Object o, int position) {
-        final VideoNewsBean.VideoListBean videoListBean = (VideoNewsBean.VideoListBean) o;
+    protected void convert(MyViewHolder holder, int position) {
+        final VideoNewsBean.VideoListBean videoListBean = (VideoNewsBean.VideoListBean) mList.get(position);
         holder.setText(R.id.title, videoListBean.getTitle());
         ImageView imageView = holder.getView(R.id.videoView);
         Glide.with(mContext).load(videoListBean.getCover()).into(imageView);
         holder.getView(R.id.playIcon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(TbsVideo.canUseTbsPlayer(mContext)){
+                if (TbsVideo.canUseTbsPlayer(mContext)) {
                     TbsVideo.openVideo(mContext, videoListBean.getMp4_url());
                 }
             }

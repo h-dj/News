@@ -56,4 +56,14 @@ public class Contracts {
      * 获取省份
      */
     public final static String province = "http://guolin.tech/api/china/";
+
+
+    /**
+     * 保存数据的key
+     */
+    public final static String WEATHER_INFO = "weatherJson";
+    public final static String WEATHER_BG = "weatherBg";
+    public static final String WEATHER_PROVINCE = "province_json";
+    public static final String WEATHER_AREA = "area";
+    public static final String VIDEO_INFO = "VideoInfo";
 }

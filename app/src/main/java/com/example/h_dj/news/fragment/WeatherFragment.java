@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.ChooseAreaActivity;
@@ -36,9 +37,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
-
-import static com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl.WEATHER_BG;
-import static com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl.WEATHER_INFO;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -214,9 +212,9 @@ public class WeatherFragment extends BaseFragment {
 
     private void update() {
         SPutils.newInstance(mContext)
-                .build(WEATHER_INFO, Context.MODE_PRIVATE)
-                .remove(WEATHER_INFO)
-                .remove(WEATHER_BG)
+                .build(Contracts.WEATHER_INFO, Context.MODE_PRIVATE)
+                .remove(Contracts.WEATHER_INFO)
+                .remove(Contracts.WEATHER_BG)
                 .commit();
         mPresenter.loadWeatherInfo(city);
         mPresenter.loadBg();

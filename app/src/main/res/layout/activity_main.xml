@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.example.h_dj.news.activity.MainActivity">
     <!-- This could be your fragment container, or something -->
         <FrameLayout
-            android:layout_weight="1"
             android:id="@+id/contentContainer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             />
-
         <com.roughike.bottombar.BottomBar
             android:id="@+id/bottomBar"
             android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
             android:layout_height="?attr/actionBarSize"
             app:bb_activeTabColor="@color/colorAccent"
-            app:bb_behavior="underNavbar"
             app:bb_tabXmlResource="@xml/bottombar_tabs"/>
-</LinearLayout>
+</RelativeLayout>

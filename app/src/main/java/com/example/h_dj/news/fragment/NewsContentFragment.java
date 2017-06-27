@@ -12,6 +12,7 @@ import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.WebActivity;
 import com.example.h_dj.news.adapter.MyRVAdapter;
 import com.example.h_dj.news.base.BaseFragment;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.NewsBean;
 
 import org.greenrobot.eventbus.EventBus;
@@ -36,7 +37,6 @@ public class NewsContentFragment extends BaseFragment {
     private List<NewsBean.ResultBean.DataBean> mDataBeen;
     private MyRVAdapter mMyRVAdapter;
 
-
     @Override
     protected int getlayoutId() {
         return R.layout.fragment_top;
@@ -48,15 +48,7 @@ public class NewsContentFragment extends BaseFragment {
         EventBus.getDefault().register(this);
         mDataBeen = new ArrayList<>();
         mMyRVAdapter = new MyRVAdapter(mContext, R.layout.news_item, mDataBeen);
-        mMyRVAdapter.setItemListener(new MyRVAdapter.OnItemListener() {
-            @Override
-            public void onBannerListener(int position) {
-                Bundle bundle = new Bundle();
-                bundle.putString("url", mDataBeen.get(position).getUrl());
-                bundle.putString("title", mDataBeen.get(position).getTitle());
-                goTo(WebActivity.class, bundle);
-            }
-
+        mMyRVAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
                 Bundle bundle = new Bundle();
@@ -67,10 +59,8 @@ public class NewsContentFragment extends BaseFragment {
 
             @Override
             public void onItemLongClick(View view, int position) {
-
             }
         });
-
         initRecyclerView();
     }
 
