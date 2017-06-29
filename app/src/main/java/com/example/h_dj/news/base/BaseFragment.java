@@ -1,7 +1,6 @@
 package com.example.h_dj.news.base;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -31,8 +30,8 @@ public abstract class BaseFragment extends Fragment {
 
     private Unbinder unbinder;
     protected Context mContext;
-    protected App mApp;
     private Toast mToast;
+    protected App mApp;
 
     @Nullable
     @Override
@@ -45,17 +44,18 @@ public abstract class BaseFragment extends Fragment {
     }
 
     protected void init() {
-        mApp = (App) ((Activity) mContext).getApplication();
+        mApp = (App) ((AppCompatActivity) mContext).getApplication();
     }
 
 
-    protected void initToolbar(Toolbar mToolbar,String title) {
+    protected void initToolbar(Toolbar mToolbar, String title) {
         ((AppCompatActivity) mContext).setSupportActionBar(mToolbar);
         ActionBar actionBar = ((AppCompatActivity) mContext).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(title);
         }
     }
+
     protected abstract int getlayoutId();
 
     @Override
@@ -93,4 +93,6 @@ public abstract class BaseFragment extends Fragment {
         mToast.setText(msg);
         mToast.show();
     }
+
+
 }

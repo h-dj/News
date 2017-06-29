@@ -12,13 +12,12 @@ import android.view.View;
 import com.example.h_dj.news.Contracts;
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
-import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.CityListAdapter;
 import com.example.h_dj.news.base.BaseActivity;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.AreaInfo;
 import com.example.h_dj.news.presenter.ILoadNewsPresenter;
 import com.example.h_dj.news.presenter.Impl.LoadNewsPresenterImpl;
-import com.example.h_dj.news.utils.LogUtil;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -42,8 +41,30 @@ public class ChooseAreaActivity extends BaseActivity {
 
     private CityListAdapter mCityListAdapter;
     private List<AreaInfo> mCityList;
-    private int areaLevel = 0;//当前区域，省级-1，市级-2，县级-3
-    private String url = null;
+    private int currentLevel = 0;//当前区域等级，
+    private final static int PROVINCE_LEVEL = 1;//省级-1，
+    private final static int CITY_LEVEL = 2;//市级-2
+    private final static int COUNTRY_LEVEL = 3;//，县级-3
+    /**
+     * 省份列表
+     */
+    private List<AreaInfo> provinces = new ArrayList<>();
+    /**
+     * 城市列表
+     */
+    private List<AreaInfo> citys = new ArrayList<>();
+    /**
+     * 市级列表
+     */
+    private List<AreaInfo> countrys = new ArrayList<>();
+    /**
+     * 选中的省份
+     */
+    private AreaInfo selectProvince;
+    /**
+     * 选中的的城市
+     */
+    private AreaInfo selectCity;
     private ILoadNewsPresenter mPresenter;
 
     @Override
@@ -61,11 +82,9 @@ public class ChooseAreaActivity extends BaseActivity {
             cityName = intent.getBundleExtra("data").getString("currentCity");
         }
         initToolbar(mToolbar, String.format("当前城市：%s", cityName));
-
         initRecyclerView();
-
         mPresenter = new LoadNewsPresenterImpl(this);
-        mPresenter.loadProvince();//下载
+        queryProvinces();
     }
 
     /**
@@ -80,44 +99,79 @@ public class ChooseAreaActivity extends BaseActivity {
         mCityListAdapter = new CityListAdapter(this, R.layout.city_item, mCityList);
         mCityListAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
             @Override
-            public void onItemClick(View view, int position) {
-                AreaInfo areaInfo = mCityList.get(position);
-                LogUtil.e(areaInfo.getName() + areaLevel);
-                if (areaLevel == 3) {
-                    EventBus.getDefault().post(new MyMessageEvent<>(areaInfo, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS));
-                    ChooseAreaActivity.this.finish();
-                    return;
-                } else if (areaLevel == 2) {
-                    url = url + "/" + areaInfo.getId();
-                    LogUtil.e(url);
-                    mPresenter.loadCounty(url);
-                } else if (areaLevel == 1) {
-                    url = Contracts.province + areaInfo.getId();
-                    LogUtil.e(url);
-                    mPresenter.loadCity(url);
+            public void onItemClick(View view, int pos) {
+                if (currentLevel == PROVINCE_LEVEL) {
+                    selectProvince = mCityList.get(pos);
+                    queryCitys();
+                } else if (currentLevel == CITY_LEVEL) {
+                    selectCity = mCityList.get(pos);
+                    queryCountrys();
+                } else if (currentLevel == COUNTRY_LEVEL) {
+                    AreaInfo area = mCityList.get(pos);
+                    EventBus.getDefault().post(new MyMessageEvent<>(area, MyMessageEvent.MSG_FROM_LOAD_WEATHER_SELECTED_AREA_SUCCESS));
+                    finish();
                 }
-
             }
 
             @Override
             public void onItemLongClick(View view, int position) {
-
             }
         });
         mRecyclerView.setAdapter(mCityListAdapter);
     }
 
+    /**
+     * 查询县
+     */
+    private void queryCountrys() {
+        currentLevel = COUNTRY_LEVEL;
+        int cityCode = selectCity.getId();
+        int provinceCode = selectProvince.getId();
+        String url = Contracts.province + provinceCode + "/" + cityCode;
+        mPresenter.queryArea(url, "county");
+    }
+
+    /**
+     * 查询市
+     */
+    private void queryCitys() {
+        currentLevel = CITY_LEVEL;
+        int provinceCode = selectProvince.getId();
+        String url = Contracts.province + provinceCode;
+        mPresenter.queryArea(url, "city");
+    }
+
+    /**
+     * 查询省
+     */
+    private void queryProvinces() {
+        currentLevel = PROVINCE_LEVEL;
+        String url = Contracts.province;
+        mPresenter.queryArea(url, "province");
+    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MyMessageEvent event) {
         int fromMsg = event.getFromMsg();
         switch (fromMsg) {
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_AREA_SUCCESS:
-                areaLevel++;
-                List<AreaInfo> infos = (List<AreaInfo>) event.getT();
-                mCityList.clear();
-                mCityList.addAll(infos);
+                int size = mCityList.size();
                 mCityListAdapter.notifyDataSetChanged();
+                mCityList.clear();
+
+                mCityListAdapter.notifyItemRangeRemoved(0, size);
+                if (currentLevel == PROVINCE_LEVEL) {
+                    provinces = (List<AreaInfo>) event.getT();
+                    mCityList.addAll(provinces);
+                } else if (currentLevel == CITY_LEVEL) {
+                    citys = (List<AreaInfo>) event.getT();
+                    mCityList.addAll(citys);
+                } else if (currentLevel == COUNTRY_LEVEL) {
+                    countrys = (List<AreaInfo>) event.getT();
+                    mCityList.addAll(countrys);
+                }
+                mCityListAdapter.notifyItemRangeInserted(0, mCityList.size());
+                mRecyclerView.scrollToPosition(0);
                 break;
         }
     }
@@ -127,13 +181,21 @@ public class ChooseAreaActivity extends BaseActivity {
         int itemId = item.getItemId();
         switch (itemId) {
             case android.R.id.home:
-                this.finish();
+                if (currentLevel == COUNTRY_LEVEL) {
+                    queryCitys();
+                } else if (currentLevel == CITY_LEVEL) {
+                    queryProvinces();
+                } else if (currentLevel == PROVINCE_LEVEL) {
+                    this.finish();
+                    return true;
+                }
                 break;
             default:
                 return super.onOptionsItemSelected(item);
         }
         return true;
     }
+
 
     @Override
     protected void onDestroy() {

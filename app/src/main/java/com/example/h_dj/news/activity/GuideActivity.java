@@ -141,17 +141,18 @@ public class GuideActivity extends BaseActivity {
     // Activity界面退出时调用
     @Override
     protected void onStop() {
-        super.onStop();
-        mHandler.removeCallbacksAndMessages(null);
         // 释放MediaPlayer资源
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
-        mIv01.clearAnimation();
+        mIv01.animate().cancel();
         mMusicIcon.clearAnimation();
+        mHandler.removeMessages(UPDATA_ANIMATION);
+        super.onStop();
     }
+
 
     @OnClick(R.id.btn_go)
     public void onViewClicked() {

@@ -232,22 +232,23 @@ public class NewsFragment extends BaseFragment {
         mTabs.addAll(set);
         LogUtil.e("mTab:" + mTabs.size());
         if (mTabs != null && mTabs.size() <= 0 && !mSPutils.isExist(TABS_SELECT)) {
-            mTabs.add(Contracts.typeValue[0]);
-            mTabs.add(Contracts.typeValue[1]);
-            mTabs.add(Contracts.typeValue[2]);
-            mTabs.add(Contracts.typeValue[3]);
-            mTabs.add(Contracts.typeValue[4]);
+            mTabs.add(Contracts.typeValue1[0]);
+            mTabs.add(Contracts.typeValue1[1]);
+            mTabs.add(Contracts.typeValue1[2]);
+            mTabs.add(Contracts.typeValue1[3]);
+            mTabs.add(Contracts.typeValue1[4]);
         }
         set = mSPutils.getStringSet(TABS_CAN_SELECT, new ArraySet());
         mCanSelectTabs.clear();
         mCanSelectTabs.addAll(set);
         LogUtil.e("mCanSelectTabs:" + mCanSelectTabs.size());
         if (mCanSelectTabs != null && mCanSelectTabs.size() <= 0 && !mSPutils.isExist(TABS_CAN_SELECT)) {
-            mCanSelectTabs.add(Contracts.typeValue[5]);
-            mCanSelectTabs.add(Contracts.typeValue[6]);
-            mCanSelectTabs.add(Contracts.typeValue[7]);
-            mCanSelectTabs.add(Contracts.typeValue[8]);
-            mCanSelectTabs.add(Contracts.typeValue[9]);
+            mCanSelectTabs.add(Contracts.typeValue1[5]);
+            mCanSelectTabs.add(Contracts.typeValue1[6]);
+            mCanSelectTabs.add(Contracts.typeValue1[7]);
+            mCanSelectTabs.add(Contracts.typeValue1[8]);
+            mCanSelectTabs.add(Contracts.typeValue1[9]);
+
         }
     }
 
@@ -261,9 +262,9 @@ public class NewsFragment extends BaseFragment {
                 showToast(msg);
                 break;
             case MyMessageEvent.MSG_FROM_NEWSFRAGMENT_SUCCESS:
-                List<NewsBean.ResultBean.DataBean> data = (List<NewsBean.ResultBean.DataBean>) event.getT();
-                LogUtil.e("数据类型：" + newsType + ":" + data.size());
-                EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
+                List<NewsBean.ResultBean.DataBean> result = (List<NewsBean.ResultBean.DataBean>) event.getT();
+                LogUtil.e("数据类型：" + newsType + ":" + result.size());
+                EventBus.getDefault().post(new MyMessageEvent<>(result, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
                 break;
         }
     }

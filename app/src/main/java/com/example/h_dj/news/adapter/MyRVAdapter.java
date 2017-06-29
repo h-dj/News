@@ -33,72 +33,65 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
      */
     private int currentType = BANNER;
     private Context mContext;
-    private List<NewsBean.ResultBean.DataBean> ItemBanners;
-    private List<NewsBean.ResultBean.DataBean> Itmes;
     private List<String> images = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
 
     public MyRVAdapter(Context context, int layoutId, List<NewsBean.ResultBean.DataBean> datas) {
         super(context, layoutId, datas);
         mContext = context;
-        ItemBanners = new ArrayList<>();
-        Itmes = new ArrayList<>();
     }
 
 
     @Override
     protected void convert(MyViewHolder holder, int position) {
         if (getItemViewType(position) == BANNER) {
-            final Banner mBanner = holder.getView(R.id.new_banner);
-            images.clear();
-            titles.clear();
-            for (int i = 0; i < 4; i++) {
-                NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) mList.get(i);
-                images.add(dataBean.getThumbnail_pic_s());
-                titles.add(dataBean.getTitle());
-            }
-            mBanner.setImages(images);
-            mBanner.setBannerTitles(titles);
-            //设置banner样式
-            mBanner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE);
-            //设置banner动画效果
-            mBanner.setBannerAnimation(Transformer.Default);
-            mBanner.setImageLoader(new ImageLoader() {
-                @Override
-                public void displayImage(Context context, Object path, ImageView imageView) {
-                    Glide.with(context).load(path).into(imageView);
-                }
-            });
-            mBanner.setOnBannerListener(new OnBannerListener() {
-                @Override
-                public void OnBannerClick(int position) {
-                    if (mOnItemClickListener != null) {
-                        mOnItemClickListener.onItemClick(mBanner, position);
-                    }
-                }
-            });
-            mBanner.setDelayTime(2500);
-            mBanner.start();
-        } else if (getItemViewType(position) > 0) {
-            NewsBean.ResultBean.DataBean dataBean = null;
-            switch (position) {
-                case 1:
-                case 2:
-                case 3:
-                    dataBean = (NewsBean.ResultBean.DataBean) mList.get(position + 3);
-                    break;
-                default:
-                    dataBean = (NewsBean.ResultBean.DataBean) mList.get(position);
-            }
+            setBannerData(holder);
+        } else if (getItemViewType(position) != BANNER) {
+            NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) mList.get(position);
             holder.setText(R.id.item_title, dataBean.getTitle());
-            holder.setText(R.id.item_author_name, dataBean.getAuthor_name());
             holder.setText(R.id.item_date, dataBean.getDate());
-            Glide.with(mContext)
-                    .load(dataBean.getThumbnail_pic_s())
-                    .placeholder(R.mipmap.ic_launcher)
+            holder.setText(R.id.item_author_name, dataBean.getAuthor_name());
+            Glide.with(mContext).load(dataBean.getThumbnail_pic_s())
                     .error(R.mipmap.ic_launcher)
                     .into((ImageView) holder.getView(R.id.item_pic));
         }
+    }
+
+    /**
+     * 设置banner
+     *
+     * @param holder
+     */
+    private void setBannerData(MyViewHolder holder) {
+        mList.get(BANNER);
+        images.clear();
+        titles.clear();
+        for (int i = 0; i < 4; i++) {
+            NewsBean.ResultBean.DataBean dataBean = (NewsBean.ResultBean.DataBean) mList.get(i);
+            images.add(dataBean.getThumbnail_pic_s());
+            titles.add(dataBean.getTitle());
+        }
+        final Banner banner = holder.getView(R.id.new_banner);
+        banner.setBannerTitles(titles)
+                .setImages(images)
+                .setDelayTime(2000)
+                .setBannerAnimation(Transformer.Default)
+                .setBannerStyle(BannerConfig.CIRCLE_INDICATOR_TITLE)
+                .setOnBannerListener(new OnBannerListener() {
+                    @Override
+                    public void OnBannerClick(int position) {
+                        if (mOnItemClickListener != null) {
+                            mOnItemClickListener.onItemClick(banner, position);
+                        }
+                    }
+                })
+                .setImageLoader(new ImageLoader() {
+                    @Override
+                    public void displayImage(Context context, Object path, ImageView imageView) {
+                        Glide.with(mContext).load(path).into(imageView);
+                    }
+                })
+                .start();
     }
 
 
@@ -120,10 +113,6 @@ public class MyRVAdapter extends BaseRecycleViewAdapter {
         return currentType;
     }
 
-    @Override
-    public int getItemCount() {
-        return super.getItemCount() - 3;
-    }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {

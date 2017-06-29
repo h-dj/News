@@ -73,7 +73,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
         return mList == null ? 0 : mList.size();
     }
 
-
     protected static class MyViewHolder extends RecyclerView.ViewHolder {
         private SparseArray<View> mViewSparseArray; //用来保存View;以免多次findViewById
         protected View mConveryView;  //用来复用itemView
@@ -85,7 +84,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
             mViewSparseArray = new SparseArray<View>();
             mConveryView = itemView;
         }
-
         /**
          * 获取ViewHolder；通过布局id来构建ViewHolder
          */
@@ -94,8 +92,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
             MyViewHolder holder = new MyViewHolder(context, itemView);
             return holder;
         }
-
-
         /**
          * //通过ViewId来获取控件;利用泛型
          *
@@ -111,8 +107,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
             }
             return (T) view;
         }
-
-
         /**
          * //常用控件方法；设置文本
          *
@@ -123,18 +117,6 @@ public abstract class BaseRecycleViewAdapter<T> extends RecyclerView.Adapter<Bas
            // Log.i(TAG, "setText: " + ViewId);
             TextView tv = getView(ViewId);
             tv.setText(content);
-        }
-
-
-        /**
-         * //设置ItemView 中单独子view的单击监听
-         *
-         * @param viewId
-         * @param listener
-         */
-        public void setOnClikListener(int viewId, OnClickListener listener) {
-            View view = getView(viewId);
-            view.setOnClickListener(listener);
         }
     }
 

@@ -22,9 +22,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     private Unbinder unbinder;
     private ProgressDialog progressDialog;
-    protected App mApp;
     private Toast mToast;
-
+    protected App mApp;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -36,13 +35,13 @@ public abstract class BaseActivity extends AppCompatActivity {
         init();
     }
 
-
     /**
      * 初始化方法
      */
     protected void init() {
         mApp = (App) getApplication();
     }
+
 
     /**
      * 布局id
@@ -106,4 +105,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
     }
+
+
 }

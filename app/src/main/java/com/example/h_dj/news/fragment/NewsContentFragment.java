@@ -1,6 +1,7 @@
 package com.example.h_dj.news.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,8 @@ import com.example.h_dj.news.adapter.MyRVAdapter;
 import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.NewsBean;
+import com.liaoinstan.springview.container.DefaultHeader;
+import com.liaoinstan.springview.widget.SpringView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -24,6 +27,8 @@ import java.util.List;
 
 import butterknife.BindView;
 
+import static com.example.h_dj.news.R.id.springView;
+
 /**
  * Created by H_DJ on 2017/5/16.
  */
@@ -33,7 +38,8 @@ public class NewsContentFragment extends BaseFragment {
 
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-
+    @BindView(springView)
+    SpringView mSpringView;
     private List<NewsBean.ResultBean.DataBean> mDataBeen;
     private MyRVAdapter mMyRVAdapter;
 
@@ -45,9 +51,48 @@ public class NewsContentFragment extends BaseFragment {
     @Override
     protected void init() {
         super.init();
+        initSpringView();
         EventBus.getDefault().register(this);
         mDataBeen = new ArrayList<>();
+        initRecyclerView();
+    }
+
+    private void initSpringView() {
+        mSpringView.setType(SpringView.Type.FOLLOW);
+        mSpringView.setListener(new SpringView.OnFreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSpringView.onFinishFreshAndLoad();
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void onLoadmore() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mSpringView.onFinishFreshAndLoad();
+                    }
+                }, 2000);
+            }
+        });
+        mSpringView.setHeader(new DefaultHeader(getContext()));
+    }
+
+    /**
+     * 初始化RecyclerView
+     */
+    private void initRecyclerView() {
         mMyRVAdapter = new MyRVAdapter(mContext, R.layout.news_item, mDataBeen);
+        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mMyRVAdapter);
         mMyRVAdapter.setOnItemClickListener(new BaseRecycleViewAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
@@ -61,18 +106,6 @@ public class NewsContentFragment extends BaseFragment {
             public void onItemLongClick(View view, int position) {
             }
         });
-        initRecyclerView();
-    }
-
-    /**
-     * 初始化RecyclerView
-     */
-    private void initRecyclerView() {
-        mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(mContext, DividerItemDecoration.VERTICAL));
-        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mMyRVAdapter);
     }
 
 
@@ -82,8 +115,8 @@ public class NewsContentFragment extends BaseFragment {
         switch (fromMsg) {
             case MyMessageEvent.MSG_FROM_NEWSFRAGMENT:
                 mDataBeen.clear();
-                List<NewsBean.ResultBean.DataBean> t = (List<NewsBean.ResultBean.DataBean>) event.getT();
-                mDataBeen.addAll(t);
+                List<NewsBean.ResultBean.DataBean> result = (List<NewsBean.ResultBean.DataBean>) event.getT();
+                mDataBeen.addAll(result);
                 mMyRVAdapter.notifyDataSetChanged();
                 break;
         }

@@ -110,11 +110,9 @@ public class WeatherFragment extends BaseFragment {
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_SUCCESS:
                 WeatherInfos.HeWeather5Bean heWeather5Bean = (WeatherInfos.HeWeather5Bean) event.getT();
                 setWeatherInfo(heWeather5Bean);
-                stopAnimation();
                 break;
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_FAILED:
                 Toast.makeText(mContext, "获取失败", Toast.LENGTH_SHORT).show();
-                stopAnimation();
                 break;
             case MyMessageEvent.MSG_FROM_LOAD_WEATHER_BG_SUCCESS:
                 Glide.with(mContext)
@@ -130,6 +128,7 @@ public class WeatherFragment extends BaseFragment {
                 update();
                 break;
         }
+        stopAnimation();
     }
 
     /**

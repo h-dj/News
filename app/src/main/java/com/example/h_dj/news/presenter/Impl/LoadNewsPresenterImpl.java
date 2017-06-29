@@ -23,6 +23,8 @@ import java.util.List;
 
 import okhttp3.Call;
 
+import static com.example.h_dj.news.Contracts.channelId;
+
 
 /**
  * Created by H_DJ on 2017/5/17.
@@ -30,15 +32,17 @@ import okhttp3.Call;
 
 public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
     private Context mContext;
+    private SPutils sPutils;
 
     public LoadNewsPresenterImpl(Context context) {
         this.mContext = context;
+        sPutils = SPutils.newInstance(mContext);
     }
 
     @Override
     public void LoadNewsData(String value) {
         String url = Contracts.getRequestUrl(value);
-        LogUtil.e(url);
+        LogUtil.e(url + ":" + channelId + ":" + value);
         if (TextUtils.isEmpty(url)) {
             EventBus.getDefault().post(new MyMessageEvent<>(mContext.getString(R.string.error_url), MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR));
         } else {
@@ -48,17 +52,17 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
                     .execute(new StringCallback() {
                         @Override
                         public void onError(Call call, Exception e, int id) {
+                            e.printStackTrace();
                             EventBus.getDefault().post(new MyMessageEvent<>(mContext.getString(R.string.error_network), MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR));
                         }
 
                         @Override
                         public void onResponse(String response, int id) {
-                            NewsBean newsBean = (NewsBean) GsonUtils.String2Obj(response, NewsBean.class);
-                            if (newsBean.getError_code() == 0) {
-                                LogUtil.e("成功");
+                            LogUtil.e("新闻：" + response);
+                           NewsBean newsBean = (NewsBean) GsonUtils.String2Obj(response, NewsBean.class);
+                            if (newsBean.getError_code()==0) {
                                 List<NewsBean.ResultBean.DataBean> data = newsBean.getResult().getData();
                                 EventBus.getDefault().post(new MyMessageEvent<>(data, MyMessageEvent.MSG_FROM_NEWSFRAGMENT_SUCCESS));
-
                             }
                         }
                     });
@@ -169,65 +173,114 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
         }
     }
 
+    /**
+     * 查询省份
+     *
+     * @param url
+     */
+    private void loadProvince(String url) {
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        sPutils.putString(Contracts.WEATHER_PROVINCE, response).commit();
+                        decodeWeatherAreaResponse(response);
+                    }
+                });
+
+    }
+
+
+    /**
+     * 查询城市
+     *
+     * @param url
+     */
+    private void loadCity(final String url) {
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        String provinceCode = url.substring(url.lastIndexOf("/"));
+                        sPutils.build(Contracts.WEATHER_AREA, Context.MODE_PRIVATE)
+                                .putString(Contracts.WEATHER_CITY + provinceCode, response)
+                                .commit();
+                        decodeWeatherAreaResponse(response);
+                    }
+                });
+    }
+
+
+    /**
+     * 查询县
+     *
+     * @param url
+     */
+    private void loadCounty(final String url) {
+        OkHttpUtils.get()
+                .url(url)
+                .build()
+                .execute(new StringCallback() {
+                    @Override
+                    public void onError(Call call, Exception e, int id) {
+                    }
+
+                    @Override
+                    public void onResponse(String response, int id) {
+                        String cityCode = url.substring(url.lastIndexOf("/"));
+                        sPutils.build(Contracts.WEATHER_AREA, Context.MODE_PRIVATE)
+                                .putString(Contracts.WEATHER_COUNTRY + cityCode, response)
+                                .commit();
+                        decodeWeatherAreaResponse(response);
+                    }
+                });
+    }
+
     @Override
-    public void loadProvince() {
+    public void queryArea(String url, String area) {
         final SPutils sPutils = SPutils.newInstance(mContext)
                 .build(Contracts.WEATHER_AREA, Context.MODE_PRIVATE);
-        boolean exist = sPutils.isExist(Contracts.WEATHER_PROVINCE);
-        LogUtil.e("省：" + exist);
-        if (exist) {
-            decodeWeatherAreaResponse(sPutils.getString(Contracts.WEATHER_PROVINCE, null));
-        } else {
-            OkHttpUtils.get()
-                    .url(Contracts.province)
-                    .build()
-                    .execute(new StringCallback() {
-                        @Override
-                        public void onError(Call call, Exception e, int id) {
-
-                        }
-
-                        @Override
-                        public void onResponse(String response, int id) {
-                            sPutils.putString(Contracts.WEATHER_PROVINCE, response).commit();
-                            decodeWeatherAreaResponse(response);
-                        }
-                    });
+        if ("province".equals(area)) {
+            boolean exist = sPutils.isExist(Contracts.WEATHER_PROVINCE);
+            LogUtil.e("省级：：" + exist);
+            if (exist) {
+                decodeWeatherAreaResponse(sPutils.getString(Contracts.WEATHER_PROVINCE, null));
+            } else {
+                loadProvince(url);
+            }
+        } else if ("city".equals(area)) {
+            String provinceCode = url.substring(url.lastIndexOf("/"));
+            boolean exist = sPutils.isExist(Contracts.WEATHER_CITY + provinceCode);
+            LogUtil.e("市级：：" + exist);
+            if (exist) {
+                decodeWeatherAreaResponse(sPutils.getString(Contracts.WEATHER_CITY + provinceCode, null));
+            } else {
+                loadCity(url);
+            }
+        } else if ("county".equals(area)) {
+            String cityCode = url.substring(url.lastIndexOf("/"));
+            boolean exist = sPutils.isExist(Contracts.WEATHER_COUNTRY + cityCode);
+            LogUtil.e("县级：：" + exist);
+            if (exist) {
+                decodeWeatherAreaResponse(sPutils.getString(Contracts.WEATHER_COUNTRY + cityCode, null));
+            } else {
+                loadCounty(url);
+            }
         }
-    }
 
-    @Override
-    public void loadCity(String url) {
-        OkHttpUtils.get()
-                .url(url)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                    }
 
-                    @Override
-                    public void onResponse(String response, int id) {
-                        decodeWeatherAreaResponse(response);
-                    }
-                });
-    }
-
-    @Override
-    public void loadCounty(String url) {
-        OkHttpUtils.get()
-                .url(url)
-                .build()
-                .execute(new StringCallback() {
-                    @Override
-                    public void onError(Call call, Exception e, int id) {
-                    }
-
-                    @Override
-                    public void onResponse(String response, int id) {
-                        decodeWeatherAreaResponse(response);
-                    }
-                });
     }
 
     /**

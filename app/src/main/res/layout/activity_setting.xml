@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/setting_bg"
+              android:orientation="vertical"
+    >
+
+    <include layout="@layout/app_bar"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="设置"
+        android:textColor="@color/secondary_text"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/individual_setting"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_margin="10dp"
+        android:background="#8fff"
+        android:gravity="center_vertical"
+        android:text="个人设置"
+        android:textColor="@color/secondary_text"
+        android:textSize="20sp"/>
+
+
+    <TextView
+        android:id="@+id/clear_cache"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_margin="10dp"
+        android:background="#8fff"
+        android:gravity="center_vertical"
+        android:text="清理缓存: 0 kB"
+        android:textColor="@color/secondary_text"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_margin="10dp"
+        android:background="#8fff"
+        android:gravity="center"
+        android:text="退出登录"
+        android:textColor="@color/primary_text"
+        android:textSize="20sp"/>
+
+    <include layout="@layout/personal"/>
+
+</LinearLayout>

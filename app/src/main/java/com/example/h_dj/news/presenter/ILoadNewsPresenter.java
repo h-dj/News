@@ -5,6 +5,7 @@ package com.example.h_dj.news.presenter;
  */
 
 public interface ILoadNewsPresenter {
+
     void LoadNewsData(String value);
 
     void loadVideoNewsList();
@@ -13,11 +14,5 @@ public interface ILoadNewsPresenter {
 
     void loadBg();
 
-    void loadProvince();
-
-    void loadCity(String url);
-
-    void loadCounty(String url);
-
-
+    void queryArea(String url, String province);
 }

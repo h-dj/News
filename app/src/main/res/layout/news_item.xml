@@ -10,6 +10,7 @@
         android:id="@+id/item_pic"
         android:layout_width="@dimen/item_height"
         android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher"/>
 
     <RelativeLayout

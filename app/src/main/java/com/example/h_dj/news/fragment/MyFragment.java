@@ -2,12 +2,12 @@ package com.example.h_dj.news.fragment;
 
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
 import com.example.h_dj.news.activity.CollectionActivity;
 import com.example.h_dj.news.activity.LoginActivity;
+import com.example.h_dj.news.activity.SettingActivity;
 import com.example.h_dj.news.base.BaseFragment;
 import com.example.h_dj.news.bean.User;
 import com.example.h_dj.news.utils.LogUtil;
@@ -82,6 +82,7 @@ public class MyFragment extends BaseFragment {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
+                goTo(SettingActivity.class,null);
                 break;
             case R.id.profile_image:
             case R.id.user_name:
@@ -95,7 +96,7 @@ public class MyFragment extends BaseFragment {
                 if (mApp.checkLogin()) {
                     goTo(CollectionActivity.class, null);
                 } else {
-                    Toast.makeText(mContext, "请先登录", Toast.LENGTH_SHORT).show();
+                    showToast( "请先登录");
                 }
                 break;
         }
