@@ -1,12 +1,12 @@
 package com.example.h_dj.news.fragment;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
@@ -40,6 +40,8 @@ public class NewsContentFragment extends BaseFragment {
     RecyclerView mRecyclerView;
     @BindView(springView)
     SpringView mSpringView;
+    @BindView(R.id.empty)
+    LinearLayout empty;
     private List<NewsBean.ResultBean.DataBean> mDataBeen;
     private MyRVAdapter mMyRVAdapter;
 
@@ -62,22 +64,11 @@ public class NewsContentFragment extends BaseFragment {
         mSpringView.setListener(new SpringView.OnFreshListener() {
             @Override
             public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSpringView.onFinishFreshAndLoad();
-                    }
-                }, 2000);
+                EventBus.getDefault().post(new MyMessageEvent<>(null, MyMessageEvent.MSG_FROM_RELOAD_NEWS_DATA));
             }
 
             @Override
             public void onLoadmore() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mSpringView.onFinishFreshAndLoad();
-                    }
-                }, 2000);
             }
         });
         mSpringView.setHeader(new DefaultHeader(getContext()));
@@ -101,7 +92,6 @@ public class NewsContentFragment extends BaseFragment {
                 bundle.putString("title", mDataBeen.get(position).getTitle());
                 goTo(WebActivity.class, bundle);
             }
-
             @Override
             public void onItemLongClick(View view, int position) {
             }
@@ -118,6 +108,14 @@ public class NewsContentFragment extends BaseFragment {
                 List<NewsBean.ResultBean.DataBean> result = (List<NewsBean.ResultBean.DataBean>) event.getT();
                 mDataBeen.addAll(result);
                 mMyRVAdapter.notifyDataSetChanged();
+                mSpringView.onFinishFreshAndLoad();
+                empty.setVisibility(View.GONE);
+                break;
+            case MyMessageEvent.MSG_FROM_LOAD_LOAD_NEWS_ERROR:
+                mDataBeen.clear();
+                mMyRVAdapter.notifyDataSetChanged();
+                mSpringView.onFinishFreshAndLoad();
+                empty.setVisibility(View.VISIBLE);
                 break;
         }
     }

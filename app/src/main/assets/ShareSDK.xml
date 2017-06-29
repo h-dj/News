@@ -97,7 +97,7 @@
         AppSecret="64020361b8ec4c99936c0e3999a9f249"
 		userName="gh_afb25ac019c9"
 		path="/page/API/pages/share/share"
-        BypassApproval="false"
+        BypassApproval="true"
         Enable="true" />
     
     <WechatMoments
@@ -105,7 +105,7 @@
         SortId="5"
         AppId="wx4868b35061f87885"
         AppSecret="64020361b8ec4c99936c0e3999a9f249"
-        BypassApproval="false"
+        BypassApproval="true"
         Enable="true" />
         
 	<WechatFavorite

@@ -486,7 +486,6 @@ public class WebActivity extends BaseActivity {
             //只会webview访问历史记录里的所有记录除了当前访问记录
             mWeb.clearHistory();
         }
-
         super.onDestroy();
     }
 

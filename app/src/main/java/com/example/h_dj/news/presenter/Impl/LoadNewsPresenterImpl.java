@@ -99,8 +99,8 @@ public class LoadNewsPresenterImpl implements ILoadNewsPresenter {
 
     private void convertToVideoNewsBean(String response) {
         VideoNewsBean videoNewsBean = (VideoNewsBean) GsonUtils.String2Obj(response, VideoNewsBean.class);
-        LogUtil.e(":::" + videoNewsBean.getVideoList().size());
         if (videoNewsBean != null) {
+            LogUtil.e(":::" + videoNewsBean.getVideoList().size());
             List<VideoNewsBean.VideoListBean> videoList = videoNewsBean.getVideoList();
             if (videoList != null && videoList.size() > 0) {
                 EventBus.getDefault().post(new MyMessageEvent<>(videoList, MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS));

@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
@@ -40,8 +40,8 @@ public class VideoFragment extends BaseFragment {
     Toolbar mToolbar;
     @BindView(R.id.recyclerView)
     RecyclerView mRecyclerView;
-    @BindView(R.id.refresh)
-    TextView mRefresh;
+    @BindView(R.id.empty)
+    LinearLayout empty;
     @BindView(R.id.swipeRefresh)
     SwipeRefreshLayout mSwipeRefresh;
 
@@ -99,18 +99,18 @@ public class VideoFragment extends BaseFragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(MyMessageEvent event) {
-        mRefresh.setVisibility(View.GONE);
+        empty.setVisibility(View.GONE);
         switch (event.getFromMsg()) {
             case MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_ERROR:
                 LogUtil.e("失败");
-                mRefresh.setVisibility(View.VISIBLE);
+                empty.setVisibility(View.VISIBLE);
                 videoList.clear();
                 mVideoAdapter.notifyDataSetChanged();
                 Toast.makeText(mContext, "加载失败", Toast.LENGTH_SHORT).show();
                 break;
             case MyMessageEvent.MSG_FROM_LOAD_VIDEO_LIST_SUCCESS:
                 LogUtil.e("成功");
-                mRefresh.setVisibility(View.GONE);
+                empty.setVisibility(View.GONE);
                 List<VideoNewsBean.VideoListBean> videoListBeen = (List<VideoNewsBean.VideoListBean>) event.getT();
                 videoList.clear();
                 videoList.addAll(videoListBeen);

@@ -74,7 +74,7 @@ public class WeatherFragment extends BaseFragment {
 
 
     private ILoadNewsPresenter mPresenter;
-    private String city;
+    private String city = "1";
 
     @Override
     protected int getlayoutId() {

@@ -30,9 +30,7 @@ public class VideoAdapter extends BaseRecycleViewAdapter {
         holder.getView(R.id.playIcon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (TbsVideo.canUseTbsPlayer(mContext)) {
-                    TbsVideo.openVideo(mContext, videoListBean.getMp4_url());
-                }
+                TbsVideo.openVideo(mContext, videoListBean.getMp4_url());
             }
         });
     }

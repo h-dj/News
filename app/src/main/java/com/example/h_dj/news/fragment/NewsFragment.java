@@ -70,7 +70,7 @@ public class NewsFragment extends BaseFragment {
     private PopupWindow pw;
     private MyPagerAdapter myPagerAdapter;
     private SPutils mSPutils;
-
+    private String currentTab;
 
     @Override
     protected int getlayoutId() {
@@ -207,8 +207,8 @@ public class NewsFragment extends BaseFragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 LogUtil.e("当前tab" + tab.getPosition());
-                String tabValue = tab.getText().toString();
-                mPresenter.LoadNewsData(tabValue);
+                currentTab = tab.getText().toString();
+                mPresenter.LoadNewsData(currentTab);
             }
 
             @Override
@@ -258,6 +258,7 @@ public class NewsFragment extends BaseFragment {
         int fromMsg = event.getFromMsg();
         switch (fromMsg) {
             case MyMessageEvent.MSG_FROM_NEWSFRAGMENT_ERROR:
+                EventBus.getDefault().post(new MyMessageEvent<>(null,MyMessageEvent.MSG_FROM_LOAD_LOAD_NEWS_ERROR));
                 String msg = (String) event.getT();
                 showToast(msg);
                 break;
@@ -265,6 +266,9 @@ public class NewsFragment extends BaseFragment {
                 List<NewsBean.ResultBean.DataBean> result = (List<NewsBean.ResultBean.DataBean>) event.getT();
                 LogUtil.e("数据类型：" + newsType + ":" + result.size());
                 EventBus.getDefault().post(new MyMessageEvent<>(result, MyMessageEvent.MSG_FROM_NEWSFRAGMENT));
+                break;
+            case MyMessageEvent.MSG_FROM_RELOAD_NEWS_DATA:
+                mPresenter.LoadNewsData(currentTab);
                 break;
         }
     }
