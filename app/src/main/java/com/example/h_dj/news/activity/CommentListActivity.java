@@ -6,9 +6,11 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.example.h_dj.news.Message.MyMessageEvent;
 import com.example.h_dj.news.R;
@@ -27,6 +29,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * Created by H_DJ on 2017/5/27.
@@ -67,6 +71,7 @@ public class CommentListActivity extends BaseActivity {
         mAdapter = new MyCommentListAdapter(this, R.layout.comment_list, mCommentBeanList);
         initRecycleView();
         mPresenter.loadCommentList(url);
+        showProgressDialog("获取评论！", null);
     }
 
     @Override
@@ -77,8 +82,8 @@ public class CommentListActivity extends BaseActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         EventBus.getDefault().unregister(this);
+        super.onDestroy();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -91,9 +96,11 @@ public class CommentListActivity extends BaseActivity {
                     mCommentBeanList.clear();
                     mCommentBeanList.addAll(t);
                     mAdapter.notifyDataSetChanged();
+                    showToast("获取成功");
                 } else {
-                    Toast.makeText(CommentListActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
+                    showToast("获取失败");
                 }
+                hiddenProgressDialog();
                 break;
         }
     }
@@ -108,10 +115,61 @@ public class CommentListActivity extends BaseActivity {
         mCommentList.setAdapter(mAdapter);
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
+    }
 
     @OnClick(R.id.send)
     public void onViewClicked() {
+        hiddenInputMethodManager(mComment);
+        if (mApp.checkLogin()) {
+            String comment = mComment.getText().toString().trim();
+            if (TextUtils.isEmpty(comment)) {
+                showToast("还没填写评论");
+                return;
+            }
+
+            sendComment(comment);
+        } else {
+            goTo(LoginActivity.class);
+        }
     }
 
-
+    /**
+     * 发送评论
+     *
+     * @param comment 评论内容
+     */
+    private void sendComment(String comment) {
+        showProgressDialog("评论中...", null);
+        final CommentBean comments = new CommentBean();
+        //注意：不能调用gameScore.setObjectId("")方法
+        comments.setUserId(mApp.mUser.getObjectId());
+        comments.setCommentContent(comment);
+        comments.setCommentUrl(url);
+        comments.save(new SaveListener<String>() {
+            @Override
+            public void done(String objectId, BmobException e) {
+                if (e == null) {
+                    showToast("评论成功");
+                    mComment.setText("");
+                    mCommentBeanList.add(comments);
+                    mAdapter.notifyItemInserted(mCommentBeanList.size());
+                    hiddenProgressDialog();
+                } else {
+                    Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
+                    showToast("评论失败");
+                    hiddenProgressDialog();
+                }
+            }
+        });
+    }
 }

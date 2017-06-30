@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.h_dj.news.App;
@@ -24,6 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Toast mToast;
     protected App mApp;
+    private InputMethodManager manager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,6 +43,7 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     protected void init() {
         mApp = (App) getApplication();
+        manager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
     }
 
 
@@ -81,6 +85,10 @@ public abstract class BaseActivity extends AppCompatActivity {
      */
     public void hiddenProgressDialog() {
         progressDialog.dismiss();
+    }
+
+    public void hiddenInputMethodManager(View view) {
+        manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     /**

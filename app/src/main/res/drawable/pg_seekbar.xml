@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+    android:id="@android:id/background" 定义轨道的背景
+    android:id="@android:id/progress"  :定义进度背景
+    android:id="@android:id/secondaryProgress" : 定义第二进度的背景
+
+    -->
+    <item
+        android:id="@android:id/background"
+        android:drawable="@drawable/progress_background"/>
+    <item
+        android:id="@android:id/secondaryProgress"
+        android:drawable="@drawable/progress_secondaryprogress"/>
+    <item
+        android:id="@android:id/progress"
+        android:drawable="@drawable/progress_normal"/>
+</layer-list>

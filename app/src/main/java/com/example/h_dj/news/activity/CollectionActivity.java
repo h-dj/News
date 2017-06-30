@@ -11,12 +11,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.h_dj.news.R;
-import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.adapter.CollectAdapter;
 import com.example.h_dj.news.base.BaseActivity;
+import com.example.h_dj.news.base.BaseRecycleViewAdapter;
 import com.example.h_dj.news.bean.CollectBean;
 import com.example.h_dj.news.utils.LogUtil;
 
@@ -79,7 +78,6 @@ public class CollectionActivity extends BaseActivity {
 
             @Override
             public void onItemLongClick(View view, int position) {
-
             }
         });
         initRecyclerView();
@@ -110,8 +108,9 @@ public class CollectionActivity extends BaseActivity {
                     mCollectAdapter.notifyDataSetChanged();
                     mRefresh.setVisibility(View.VISIBLE);
                     LogUtil.e("bmob失败：" + e.getMessage() + "," + e.getErrorCode());
-                    Toast.makeText(CollectionActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
+                    showToast("获取失败");
                 }
+                hiddenProgressDialog();
             }
         });
     }
@@ -120,7 +119,8 @@ public class CollectionActivity extends BaseActivity {
      * 获取收藏数目
      */
     public void getCollectCount() {
-        BmobQuery<CollectBean> query = new BmobQuery<CollectBean>();
+        showProgressDialog("获取收藏列表", null);
+        BmobQuery<CollectBean> query = new BmobQuery<>();
         query.addWhereEqualTo("userId", mApp.mUser.getObjectId());
         query.count(CollectBean.class, new CountListener() {
             @Override
@@ -132,8 +132,9 @@ public class CollectionActivity extends BaseActivity {
                     mHandler.sendMessage(msg);
                     LogUtil.e("成功" + count);
                 } else {
+                    hiddenProgressDialog();
                     LogUtil.e("bmob失败：" + e.getMessage() + "," + e.getErrorCode());
-                    Toast.makeText(CollectionActivity.this, "获取失败", Toast.LENGTH_SHORT).show();
+                    showToast("获取失败");
                 }
             }
         });

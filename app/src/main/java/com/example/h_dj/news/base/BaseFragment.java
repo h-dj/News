@@ -1,6 +1,7 @@
 package com.example.h_dj.news.base;
 
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,6 +33,7 @@ public abstract class BaseFragment extends Fragment {
     protected Context mContext;
     private Toast mToast;
     protected App mApp;
+    private ProgressDialog progressDialog;
 
     @Nullable
     @Override
@@ -94,5 +96,20 @@ public abstract class BaseFragment extends Fragment {
         mToast.show();
     }
 
+    /**
+     * 显示进度
+     */
+    public void showProgressDialog(String title, String msg) {
+        progressDialog = ProgressDialog.show(mContext, title, msg, false);
+    }
+
+    /**
+     * 隐藏进度
+     */
+    public void hiddenProgressDialog() {
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
 
 }

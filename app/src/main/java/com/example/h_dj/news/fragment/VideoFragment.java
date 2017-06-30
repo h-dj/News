@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
+import fm.jiecao.jcvideoplayer_lib.JCVideoPlayer;
 
 /**
  * Created by H_DJ on 2017/5/16.
@@ -48,7 +49,6 @@ public class VideoFragment extends BaseFragment {
 
     private VideoAdapter mVideoAdapter;
     private List<VideoNewsBean.VideoListBean> videoList;
-
     private ILoadNewsPresenter mPresenter;
 
     @Override
@@ -120,6 +120,14 @@ public class VideoFragment extends BaseFragment {
         mSwipeRefresh.setRefreshing(false);
     }
 
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if(hidden){
+            JCVideoPlayer.releaseAllVideos();
+        }
+        super.onHiddenChanged(hidden);
+    }
 
     @Override
     public void onDestroyView() {

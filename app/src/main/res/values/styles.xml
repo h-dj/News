@@ -9,7 +9,13 @@
         <item name="android:windowAnimationStyle">@style/AnimaActivity</item>
     </style>
 
-
+    <!-- SplashActivity Theme-->
+    <style name="fullScreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
     <style name="splashTheme" parent="AppTheme">
         <item name="android:background">@drawable/splash</item>
         <item name="android:windowFullscreen">true</item>

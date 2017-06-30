@@ -115,14 +115,13 @@ public class DataCleanManager {
             @Override
             public void run() {
                 super.run();
-                cleanInternalCache();
-                cleanExternalCache();
-                cleanSharedPreference();
-                cleanDatabases();
-                cleanFiles();
-                cleanWebViewFile();
                 try {
-                    LogUtil.e("缓存：" + getCacheSize());
+                    cleanInternalCache();
+                    cleanExternalCache();
+                    cleanSharedPreference();
+                    cleanDatabases();
+                    cleanFiles();
+                    cleanWebViewFile();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -171,7 +170,6 @@ public class DataCleanManager {
             }
         }
         LogUtil.e("缓存路径：" + mContext.getCacheDir() + ": " + mContext.getFilesDir() + ":" + mContext.getExternalCacheDir() + ":" + mContext.getExternalFilesDir(null));
-        LogUtil.e("缓存大小" + cacheSize);
         return cacheSize;
     }
 

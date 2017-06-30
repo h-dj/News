@@ -18,4 +18,10 @@
     <color name="green">#34515c</color>
     <color name="green_dark">#1e3e4a</color>
     <color name="night_mask">#90000000</color>
+    <color name="ridde_press">#22ff0000</color>
+    <color name="ridde">#00ff0000</color>
+    <color name="rb_text_color">#363636</color>
+    <color name="rb_text_color_press">#3097fd</color>
+    <color name="tv_search_textcolor">#99ffffff</color>
+    <color name="tv_search_textcolor_pressed">#ffffffff</color>
 </resources>

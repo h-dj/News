@@ -64,6 +64,12 @@ public class MyFragment extends BaseFragment {
         initUserInfo();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initUserInfo();
+    }
+
     /**
      * 初始化用户
      * 判断是否已登陆
@@ -78,11 +84,11 @@ public class MyFragment extends BaseFragment {
     }
 
 
-    @OnClick({R.id.setting, R.id.profile_image, R.id.user_name, R.id.collection})
+    @OnClick({R.id.setting, R.id.profile_image, R.id.user_name, R.id.collection, R.id.comment})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
-                goTo(SettingActivity.class,null);
+                goTo(SettingActivity.class, null);
                 break;
             case R.id.profile_image:
             case R.id.user_name:
@@ -96,8 +102,10 @@ public class MyFragment extends BaseFragment {
                 if (mApp.checkLogin()) {
                     goTo(CollectionActivity.class, null);
                 } else {
-                    showToast( "请先登录");
+                    showToast("请先登录");
                 }
+            case R.id.comment:
+
                 break;
         }
     }

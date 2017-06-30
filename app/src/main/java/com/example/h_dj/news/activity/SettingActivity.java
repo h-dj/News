@@ -31,12 +31,10 @@ public class SettingActivity extends BaseActivity {
     TextView mLogout;
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
-
     @Override
     protected int getLayoutId() {
         return R.layout.activity_setting;
     }
-
     @Override
     protected void init() {
         super.init();
@@ -61,7 +59,6 @@ public class SettingActivity extends BaseActivity {
         }
         return true;
     }
-
     private void initCacheSize() {
         try {
             String size = DataCleanManager.getInstance(this).getTotalCacheSize();
@@ -69,9 +66,7 @@ public class SettingActivity extends BaseActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 
     @OnClick({R.id.individual_setting, R.id.clear_cache, R.id.logout})
     public void onViewClicked(View view) {
@@ -86,7 +81,6 @@ public class SettingActivity extends BaseActivity {
                 break;
         }
     }
-
     private void logout() {
         new AlertDialog.Builder(this)
                 .setTitle("退出登录！")
@@ -108,8 +102,6 @@ public class SettingActivity extends BaseActivity {
                 .create()
                 .show();
     }
-
-
     /**
      * 清楚缓存
      */
@@ -124,12 +116,11 @@ public class SettingActivity extends BaseActivity {
                             manager.cleanApplicationData();
                             LogUtil.e("缓存：" + manager.getTotalCacheSize());
                             Toast.makeText(SettingActivity.this, "清除成功！", Toast.LENGTH_SHORT).show();
-                            mClearCache.setText(String.format("清理缓存: %s", manager.getTotalCacheSize()));
+                            mClearCache.setText(String.format("清理缓存: %s", "0KB"));
                         } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(SettingActivity.this, "清除失败！", Toast.LENGTH_SHORT).show();
                         }
-
                         dialog.dismiss();
                     }
                 })

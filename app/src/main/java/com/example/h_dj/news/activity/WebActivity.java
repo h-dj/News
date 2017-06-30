@@ -153,6 +153,7 @@ public class WebActivity extends BaseActivity {
                 if (e == null) {
                     commentCount = count;
                     setCommentCount(commentCount);
+                    mMenu.findItem(R.id.comment).setTitle(String.format("%s 跟帖", commentCount));
                     LogUtil.e("CommentCount:" + count + ":url" + url + ":" + mWeb.getOriginalUrl());
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
@@ -402,6 +403,7 @@ public class WebActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         mWeb.getSettings().setJavaScriptEnabled(true);
+        getCommentCount();
     }
 
     @Override
@@ -491,6 +493,7 @@ public class WebActivity extends BaseActivity {
 
     @OnClick(R.id.send)
     public void onViewClicked() {
+        hiddenInputMethodManager(mComment);
         if (mApp.checkLogin()) {
             String comment = mComment.getText().toString().trim();
             if (TextUtils.isEmpty(comment)) {
@@ -509,6 +512,7 @@ public class WebActivity extends BaseActivity {
      * @param comment 评论内容
      */
     private void sendComment(String comment) {
+        showProgressDialog("评论中...", null);
         CommentBean comments = new CommentBean();
         //注意：不能调用gameScore.setObjectId("")方法
         comments.setUserId(mApp.mUser.getObjectId());
@@ -522,9 +526,11 @@ public class WebActivity extends BaseActivity {
                     commentCount++;
                     setCommentCount(commentCount);
                     mComment.setText("");
+                    hiddenProgressDialog();
                 } else {
                     Log.i("bmob", "失败：" + e.getMessage() + "," + e.getErrorCode());
                     showToast("评论失败");
+                    hiddenProgressDialog();
                 }
             }
         });
